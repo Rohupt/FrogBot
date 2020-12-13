@@ -1,0 +1,174 @@
+{
+    "id": "559816640133595137",
+    "ownerRoleID": "559820224409501734",
+    "adminRoleID": "559820324787716097",
+    "modRoleID": "660596042915512321",
+    "dmRoleID": "634962746152189976",
+    "noCampRoleID": "689644983141007392",
+    "advLeagueRoleCatID": "710447442495144038",
+    "roleplayCat": "634459112050130977",
+    "discussCat": "638051953666031627",
+    "advLeagueCat": "706856741123522560",
+    "archiveCat": "559839530291822622",
+    "campList": [
+        {
+            "name": "Curse of Strahd",
+            "isOS": false,
+            "DM": "498497848992858112",
+            "role": "640940473107742753",
+            "state": "Running",
+            "description": "",
+            "notes": "- Về build nhân vật, player có thể sử dụng race, class, spell, feat của gần như tất cả official book, ngoại trừ 2 quyển sau đây: Guild Master's Guide to Ravnica & Wayfinder's Guide to Eberron.\n- TUY NHIÊN, có thể sử dụng Dragonmark trong Wayfinder's Guide to Eberron.\n- Cho phép class Blood Hunter.\n- Mọi thắc mắc khác xin liên hệ DM",
+            "roleplayChannel": "640940005266817050",
+            "discussChannel": "640940053736194048",
+            "players": [
+                "353044705623146497",
+                "303526722215608322",
+                "305391804142977024",
+                "453881529781714954",
+                "275992469764833280",
+                "499546378398334988"
+            ]
+        },
+        {
+            "name": "Into the Beef’s Keep",
+            "isOS": false,
+            "DM": "366367170965536768",
+            "role": "747530910139678725",
+            "state": "Running",
+            "description": "",
+            "notes": "- Chơi theo rules Feast of Legend với chỉnh sửa của DM để phù hợp với playtest và sửa chữa 1 số lỗi trong luật game. Về cơ bản là D&D 5e tối giản.\n- Gameplay nhảm nhí, questline cliché, puzzle yêu cầu hiểu biết về chuỗi nhà hàng Wendy’s, campaign vui vẻ là chính, giao lưu không quạu, không tryhard.",
+            "roleplayChannel": "748192910394130552",
+            "discussChannel": "748193067550376106",
+            "players": [
+                "723812551867236472",
+                "499587089038442536",
+                "406742094145650690",
+                "418424861640228864"
+            ]
+        },
+        {
+            "name": "Cuộc phiêu lưu vào lòng đất",
+            "isOS": false,
+            "DM": "498497848992858112",
+            "role": "715206970289684480",
+            "state": "Running",
+            "description": "Chuyến hành trình đến Avernus để giải thoát cho Elturel khỏi cảnh tù tội",
+            "notes": "",
+            "roleplayChannel": "715207538274074664",
+            "discussChannel": "715207213966163989",
+            "players": [
+                "275992469764833280",
+                "453881529781714954",
+                "674923174592249888",
+                "609047433753657384"
+            ]
+        },
+        {
+            "name": "Lôi Đình Vũ Vương",
+            "isOS": false,
+            "DM": "353044705623146497",
+            "role": "702875053427130409",
+            "state": "Running",
+            "description": "Hành trình của gia tộc Joestar khám phá miền Bắc",
+            "notes": "Module Storm King's Thunder",
+            "roleplayChannel": "702466777678086194",
+            "discussChannel": "702466674846335057",
+            "players": [
+                "609047433753657384",
+                "499546378398334988",
+                "498497848992858112",
+                "453881529781714954",
+                "275992469764833280"
+            ]
+        },
+        {
+            "name": "ValderBot Test Camp 91787",
+            "isOS": false,
+            "DM": "557993979015331843",
+            "role": "752594379847499796",
+            "state": "Running",
+            "description": "Test camp 91787\\n123\nCreated 7/9/2020",
+            "notes": "- Time:\n- Players:\n- abc\n- def\n- ghi",
+            "roleplayChannel": "752594386822627479",
+            "discussChannel": "752594383651471370",
+            "players": [
+                "656110011285766145",
+                "172002275412279296",
+                "668007532131909644"
+            ]
+        },
+        {
+            "name": "Waterdeep: Dragon Heist",
+            "isOS": false,
+            "DM": "197969369987416064",
+            "role": "752817965916749864",
+            "state": "Running",
+            "description": "",
+            "notes": "- Lvl: 1-7, module will be scaled up\n- Player: 4-5 \n- Time: choose one - sáng t2/t5/t6 - Chiều t4\n- Urban campaign, mix of intrigue and heroic\n- Official content, starting equipment\n- UA can run by me but ye gotta explain why it better serves your concept\n- steampunk elements, there will be simple firearms\n- point buy, can reallocate lowest racial bonus",
+            "roleplayChannel": "752817971789037589",
+            "discussChannel": "752817969096163328",
+            "players": [
+                "499546378398334988",
+                "444883037067542528",
+                "472043410916900875",
+                "366367170965536768",
+                "426718445170720768"
+            ]
+        },
+        {
+            "name": "Into the Wood",
+            "isOS": false,
+            "DM": "288272225226719232",
+            "role": "716984030868013096",
+            "state": "Running",
+            "description": "",
+            "notes": "- Pointbuy\n- HP roll.\n- Đưa source cho DM duyệt trước",
+            "roleplayChannel": "716984727244111925",
+            "discussChannel": "716984852217593866",
+            "players": [
+                "499587089038442536",
+                "651986650209189900",
+                "314788929788313600",
+                "674923174592249888",
+                "362945349482053632"
+            ]
+        },
+        {
+            "name": "Hands of the Eight",
+            "isOS": false,
+            "DM": "499587089038442536",
+            "role": "749986017372667955",
+            "state": "Running",
+            "description": "",
+            "notes": "- UA allowed (Báo trước DM)\n- No Ravnica background.\n- Basic item\n- Roll stats, 70< total<80, tối thiểu 1 ability được 15\n- Chơi tối thứ 3-5, 9h30",
+            "roleplayChannel": "749993420323291167",
+            "discussChannel": "749993560249729144",
+            "players": [
+                "232380046621278209",
+                "343794487224565760",
+                "314788929788313600",
+                "236032273827364865"
+            ]
+        },
+        {
+            "name": "The Amazing Kokonut",
+            "isOS": false,
+            "DM": "362945349482053632",
+            "role": "731194859070816317",
+            "state": "Running",
+            "description": "",
+            "notes": "",
+            "roleplayChannel": "731195378141102211",
+            "discussChannel": "731195397351014543",
+            "players": [
+                "529159292499263504",
+                "726073281089765411",
+                "723812551867236472",
+                "740521771714740255",
+                "674923174592249888",
+                "343794487224565760"
+            ]
+        }
+    ]
+}

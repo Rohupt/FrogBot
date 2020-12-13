@@ -1,0 +1,9 @@
+{
+    "token": "yout bot token here",
+    "botID": "your bot id here",
+    "ownerID": "your own id here",
+    "developerMode": false,
+    "prefix": {
+        "default": ";",
+    }
+}
