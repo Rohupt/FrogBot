@@ -12,6 +12,8 @@ module.exports = {
     description: 'Ping the bot to see if it answers or not.',
 
     execute(client, message, args) {
-        message.channel.send(`Pong! 🏓 Ping time: ${client.ws.ping} ms.`);
+        message.channel.send(`Pong! 🏓`).then((resultMessage) => {
+            resultMessage.edit(`Pong! 🏓\nBot latency \`${resultMessage.createdTimestamp - message.createdTimestamp}\`ms, API latency: \`${client.ws.ping}\` ms.`);
+        });
     },
 };

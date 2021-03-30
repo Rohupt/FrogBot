@@ -4,6 +4,6 @@
     "ownerID": "your own id here",
     "developerMode": false,
     "prefix": {
-        "default": ";",
+        "default": ";"
     }
 }
