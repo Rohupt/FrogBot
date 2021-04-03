@@ -38,6 +38,10 @@ module.exports = {
         }
         if (!quoted) return message.reply("no such message found.");
 
+        if (args.includes('-n')) {
+            return message.channel.send(quoted.content);
+        };
+        
         const embed = new Discord.MessageEmbed();
         embed.setAuthor(quoted.member.nickname ? quoted.member.nickname : quoted.author.username, quoted.author.avatarURL())
             .setColor(quoted.member.displayHexColor)

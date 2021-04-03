@@ -1,6 +1,6 @@
 const chokidar = require('chokidar');
 const path = require('path');
-var watcher = chokidar.watch('./', {ignored: './Tests', cwd: '.'});
+var watcher = chokidar.watch('./', {ignored: ['./Tests', /(^|[\/\\])\../], cwd: '.'});
 
 module.exports = {
     watcher: watcher,
@@ -23,7 +23,14 @@ module.exports = {
                         });
                         client.commands.delete(name[1]);
                         const command = require('./' + filePath);
+                        if (!command) {
+                            console.log('Cannot find command');
+                            break;
+                        };
                         client.commands.set(command.name, command);
+                        if (!command) {
+                            console.log(`Cannot load command ${name.join('/')} aliases`);
+                        };
                         command.aliases.forEach(alias => {
                             client.aliases.set(alias, command.name);
                         });

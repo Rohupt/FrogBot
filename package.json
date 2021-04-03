@@ -2,7 +2,7 @@
   "name": "valderbot",
   "version": "1.0.0",
   "description": "My own Discord bot",
-  "main": "valderbot.js",
+  "main": "index.js",
   "author": "Rohupt",
   "dependencies": {
     "chokidar": "^3.4.2",
@@ -20,7 +20,7 @@
     "@babel/preset-env": "^7.11.0"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",

@@ -20,11 +20,11 @@ module.exports = {
                 return b.position - a.position;
             return a < b ? -1 : a == b ? 0 : 1;
         });
-        var reply = ``, count = 0;
+        var reply = ``;
         const pad = Math.floor(Math.log10(roles.size)) + 1;
 
-        roleList.forEach(role => {
-            reply += `\`#${(++count).toString().padStart(pad)} (${role.position.toString().padStart(pad)}/${role.rawPosition.toString().padStart(pad)}): ${role.name}\`\n`;
+        roleList.forEach((role, index) => {
+            reply += `\`#${(index + 1).toString().padStart(pad)} (${role.position.toString().padStart(pad)}/${role.rawPosition.toString().padStart(pad)}): ${role.name}\`\n`;
         });
         message.channel.send(reply, {split: true});
     },
