@@ -26,7 +26,7 @@ module.exports = {
 
     async execute(client, message, args, joined, embed) {
         let config = client.util.reloadFile('@data/config.json');
-        let configejf = ejf('@data/config.json', {
+        let configejf = ejf('/app/Data/config.json', {
             stringify_width: 4,
             autosave: true
         });
