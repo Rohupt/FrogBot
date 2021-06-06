@@ -1,0 +1,9 @@
+{
+    "token": "Njg3NTMyNTk1NjA4NjgyNDk5.XmnIoA.C1v_oeK1FgRww-U-K7V7H9Tv4LQ",
+    "botID": "687532595608682499",
+    "ownerID": "508281938017255425",
+    "mongo": "mongodb+srv://frogbot:Shuleria-d-Ech@frogbot.kv62t.mongodb.net/frogbot?retryWrites=true&w=majority",
+    "invite": "https://discord.com/api/oauth2/authorize?client_id=687532595608682499&permissions=4228381783&scope=bot",
+    "developerMode": true,
+    "defaultPrefix": ";"
+}
