@@ -26,10 +26,11 @@ module.exports = {
 
     async execute(client, message, args, joined, embed) {
         let config = client.util.reloadFile('@data/config.json');
-        let configejf = ejf('../../Data/config.json', {
+        let configejf = ejf('@data/config.json', {
             stringify_width: 4,
             autosave: true
         });
+        console.log(configejf);
         if (!args.length) {
             embed.setDescription(`Developer Mode is currently \`${config.developerMode ? 'ON' : 'OFF'}\`.`);
         } else {
