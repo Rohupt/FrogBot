@@ -25,8 +25,7 @@ module.exports = {
         '\tCorresponding options: `reverse, REVERSE, r, R, -1, /`',
 
     async execute(client, message, args, joined, embed) {
-        delete require.cache[require.resolve('../../Data/config.json')];
-        let config = require('@data/config.json');
+        let config = client.util.reloadFile('@data/config.json');
         let configejf = ejf('@data/config.json', {
             stringify_width: 4,
             autosave: true
