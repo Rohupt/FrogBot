@@ -58,7 +58,7 @@ module.exports = {
                     default:
                         console.log(`Updated File: ${filePath}`);
                         if (name[1] == 'config' && dirs[0] == 'Data')
-                            client.prefix.default = client.util.reloadFile('@data/config.js').defaultPrefix;
+                            client.prefix.default = client.util.reloadFile('@data/config.json').defaultPrefix;
                         break;
                 };
             })
