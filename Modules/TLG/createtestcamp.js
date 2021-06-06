@@ -1,64 +1,64 @@
 const Discord = require('discord.js');
 const {sep} = require('path');
-const {random} = require('mathjs');
-const ejf = require('edit-json-file');
 const name = __filename.split(sep)[__filename.split(sep).length - 1].replace(/\.[^/.]+$/, "");
 const mod = __dirname.split(sep)[__dirname.split(sep).length - 1];
-const aliases = [name, 'ctc'];
+const aliases = ['ctc'];
+
+const {random} = require('mathjs');
+const CampModel = require('@data/Schema/camp-schema.js');
 
 module.exports = {
-    name: name,
+    name, aliases,
     module: mod,
-    aliases: aliases,
-    permission: 'moderators',
+    channelType: 1, //-1: direct message only, 0: both, 1: guild channel only
+    permission: 'developer',
+    userPermissionList: [],
+    botPermissionList: ['MANAGE_CHANNELS', 'MANAGE_ROLES'],
+    minArguments: 0,
     
-    description: 'Create a test camp, for bot developing purposes',
+    description: 'Create a test camp',
+    usage: `\`<commandname>\` Create a full camp\n` +
+        `\`<commandname> os\` Create an oneshot\n`,
 
-    async execute(client, message, args) {
+    async execute(client, message, args, joined, embed) {
         const pos = {
             osRpChannel : function() {
-                delete require.cache[require.resolve('../../Data/tlg.json')];
-                let tlg = require('../../Data/tlg.json');
+                let tlg = client.util.reloadFile('@data/tlg.json');
                 return Array.from(client.guilds.cache.get(tlg.id).channels.cache.values())
                     .filter(ch => (ch.parentID == tlg.roleplayCat && ch.name.startsWith('os')))
                     .sort((a, b) => {return b.position - a.position})[0]
                     .position;
             },
             osDiscChannel : function() {
-                delete require.cache[require.resolve('../../Data/tlg.json')];
-                let tlg = require('../../Data/tlg.json');
+                let tlg = client.util.reloadFile('@data/tlg.json');
                 return Array.from(client.guilds.cache.get(tlg.id).channels.cache.values())
                     .filter(ch => (ch.parentID == tlg.discussCat && ch.name.startsWith('os')))
                     .sort((a, b) => {return b.position - a.position})[0]
                     .position;
             },
             osRole : function() {
-                delete require.cache[require.resolve('../../Data/tlg.json')];
-                let tlg = require('../../Data/tlg.json');
+                let tlg = client.util.reloadFile('@data/tlg.json');
                 return Array.from(client.guilds.cache.get(tlg.id).roles.cache.values())
                     .filter(r => r.name.startsWith('OS '))
                     .sort((a, b) => {return b.position - a.position})[0]
                     .position;
             },
             fullRpChannel : function() {
-                delete require.cache[require.resolve('../../Data/tlg.json')];
-                let tlg = require('../../Data/tlg.json');
+                let tlg = client.util.reloadFile('@data/tlg.json');
                 return Array.from(client.guilds.cache.get(tlg.id).channels.cache.values())
                     .filter(ch => (ch.parentID == tlg.roleplayCat && !ch.name.startsWith('os')))
                     .sort((a, b) => {return b.position - a.position})[0]
                     .position;
             },
             fullDiscChannel : function() {
-                delete require.cache[require.resolve('../../Data/tlg.json')];
-                let tlg = require('../../Data/tlg.json');
+                let tlg = client.util.reloadFile('@data/tlg.json');
                 return Array.from(client.guilds.cache.get(tlg.id).channels.cache.values())
                     .filter(ch => (ch.parentID == tlg.discussCat && !ch.name.startsWith('os')))
                     .sort((a, b) => {return b.position - a.position})[0]
                     .position;
             },
             fullRole : function() {
-                delete require.cache[require.resolve('../../Data/tlg.json')];
-                let tlg = require('../../Data/tlg.json');
+                let tlg = client.util.reloadFile('@data/tlg.json');
                 return Array.from(client.guilds.cache.get(tlg.id).roles.cache.values())
                     .filter(r => r.name.startsWith('_'))
                     .sort((a, b) => {return b.position - a.position})[2]
@@ -66,12 +66,7 @@ module.exports = {
             },
         };
         
-        delete require.cache[require.resolve('../../Data/tlg.json')];
-        var tlg = require('../../Data/tlg.json');
-        let tlgEdit = ejf('./Data/tlg.json', {
-            stringify_width: 4,
-            autosave: true
-        });
+        let tlg = client.util.reloadFile('@data/tlg.json');
 
         const guild = client.guilds.resolve(tlg.id);
         const isOS = args.length ? args[0].toLowerCase() == "os" : false;
@@ -89,24 +84,16 @@ module.exports = {
             players: []
         };
 
-        var rpChPos, dcChPos, rolePos;
-        if (isOS) {
-            rpChPos = pos.osRpChannel() + 1;
-            dcChPos = pos.osDiscChannel() + 1;
-            rolePos = pos.osRole();
-            newCamp.name = "OS " + newCamp.name;
-        } else {
-            rpChPos = pos.fullRpChannel() + 1;
-            dcChPos = pos.fullDiscChannel() + 1;
-            rolePos = pos.fullRole();
-        };
-        const chName = newCamp.name.split(/ +/).join('-').toLowerCase();
+        let rpChPos = newCamp.isOS ? (pos.osRpChannel() + 1) : (pos.fullRpChannel() + 1);
+        let dcChPos = newCamp.isOS ? (pos.osDiscChannel() + 1) : (pos.fullDiscChannel() + 1);
+        let rolePos = newCamp.isOS ? pos.osRole() : pos.fullRole();
+        const chName = client.util.getCampNames(newCamp).chName;
 
         var rpCh, dcCh, role;
         try {
             await guild.roles.create({
                 data: {
-                    name: newCamp.name,
+                    name: client.util.getCampNames(newCamp).roleName,
                     position: rolePos,
                     mentionable: true
                 }
@@ -141,12 +128,11 @@ module.exports = {
         newCamp.roleplayChannel = rpCh.id;
         newCamp.discussChannel = dcCh.id;
         
-        tlg.campList.push(newCamp);
-        tlgEdit.set("campList", tlg.campList);
+        CampModel.create(newCamp);
         guild.members.resolve(newCamp.DM).roles.add([role, guild.roles.resolve(tlg.dmRoleID)]);
         rpCh.send(`${role} Đây là kênh roleplay.`);
         dcCh.send(`${role} Đây là kênh thảo luận.`);
 
-        message.reply(`test camp created. Role: ${role}. Roleplay channel: ${rpCh}. Discuss channel: ${dcCh}.`);
+        message.channel.send(embed.setDescription(`Test camp created.\nRole: ${role}.\nRoleplay channel: ${rpCh}.\nDiscuss channel: ${dcCh}.`));
     },
 };

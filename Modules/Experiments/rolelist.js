@@ -8,6 +8,9 @@ module.exports = {
     module: mod,
     aliases: aliases,
     permission: 'developer',
+    userPermissionList: [],
+    botPermissionList: [],
+    minArguments: 0,
     
     description: 'List all roles of the server.',
 

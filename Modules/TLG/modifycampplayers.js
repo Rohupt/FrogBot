@@ -1,37 +1,34 @@
 const Discord = require('discord.js');
-const {random} = require('mathjs');
 const {sep} = require('path');
-const ejf = require('edit-json-file');
-
 const name = __filename.split(sep)[__filename.split(sep).length - 1].replace(/\.[^/.]+$/, "");
 const mod = __dirname.split(sep)[__dirname.split(sep).length - 1];
-const aliases = [name, 'mcp'];
+const aliases = ['mcp'];
+
+const CampModel = require('@data/Schema/camp-schema.js');
 
 module.exports = {
-    name: name,
+    name, aliases,
     module: mod,
-    aliases: aliases,
+    channelType: 1, //-1: direct message only, 0: both, 1: guild channel only
     permission: 'dungeonmasters',
+    userPermissionList: [],
+    botPermissionList: ['MANAGE_CHANNELS', 'MANAGE_ROLES'],
+    minArguments: 2,
     
-    description: 'Modify the player list of a campaign.',
+    description: 'Add or remove players of a campaign.',
+    usage: `\`<commandname> <campaign> + <addlist> - <removelist>\`\n` +
+        "Names should be wrapped in double quotes if contains a space.\n" +
+        "You can swap `+` and `-` signs and the corresponding lists, but the signs must be separated from any names by a space.\n" +
+        "If both `+` and `-` are omitted, players in the list will be removed, and non-players in the list will be added.",
 
-    async execute(client, message, args) {
-        const embed = new Discord.MessageEmbed();
-        const user = client.util.user;
-        embed.setAuthor(message.member.nickname ? message.member.nickname : message.author.username, message.author.avatarURL())
-            .setColor(random([3], 256));
-
-        delete require.cache[require.resolve('../../Data/tlg.json')];
-        var tlg = require('../../Data/tlg.json');
-        let tlgEdit = ejf('./Data/tlg.json', {
-            stringify_width: 4,
-            autosave: true
-        });
+    async execute(client, message, args, joined, embed) {
+        var tlg = client.util.reloadFile('@data/tlg.json');
         const guild = client.guilds.resolve(tlg.id);
+        var campList = await CampModel.find({});
         
-        const camp = tlg.campList.find(c => c.name.toLowerCase().includes(args[0].toLowerCase()));
+        const camp = campList.find(c => c.name.toLowerCase().includes(args[0].toLowerCase()));
         if (!camp) {
-            embed.setDescription(`There is no campaign named \`${args[0]}\`.`);
+            embed.setDescription(`There is no campaign with such name.`);
             return message.channel.send(embed);
         };
         const campIndex = tlg.campList.indexOf(camp);
@@ -87,20 +84,20 @@ module.exports = {
 
         const campRoleMaxPos = guild.roles.resolve(tlg.noCampRoleID).position,
             campRoleMinPos = guild.roles.resolve(tlg.advLeagueRoleCatID).position;
-        removeList.forEach(mem => {
-            mem.roles.remove(camp.role);
+        for (mem of removeList) {
+            await mem.roles.remove(camp.role);
             if (!mem.roles.cache.some(r => (r.position > campRoleMinPos && r.position < campRoleMaxPos)))
-                mem.roles.add(noCampRoleID);
+                await mem.roles.add(tlg.noCampRoleID);
             if (camp.players.includes(mem.id))
                 camp.players.splice(camp.players.indexOf(mem.id), 1);
-        });
-        addList.forEach(mem => {
-            mem.roles.add(camp.role);
-            mem.roles.remove(tlg.noCampRoleID);
+        };
+        for (mem of addList) {
+            await mem.roles.add(camp.role);
+            await mem.roles.remove(tlg.noCampRoleID);
             if (!camp.players.includes(mem.id))
                 camp.players.push(mem.id);
-        });
-        tlgEdit.set(`campList.${campIndex}.players`, camp.players);
+        };
+        await CampModel.updateOne({ _id: camp.id }, { $set: {players: camp.players}});
 
         var desc = "Modification completed. Here are the results:";
         var addField = "", removeField = "", resultField = "|";

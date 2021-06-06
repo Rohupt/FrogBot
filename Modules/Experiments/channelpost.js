@@ -7,7 +7,10 @@ module.exports = {
     name: name,
     module: mod,
     aliases: aliases,
-    permission: 'moderators',
+    permission: 'developer',
+    userPermissionList: [],
+    botPermissionList: ['MANAGE_CHANNELS', 'MANAGE_ROLES'],
+    minArguments: 0,
     
     description: 'Move a channel',
 

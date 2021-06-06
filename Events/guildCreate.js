@@ -1,14 +1,10 @@
-const ejf = require('edit-json-file');
-var config = require('../Data/config.json');
+const ServerModel = require('@data/Schema/server-schema.js');
 
-module.exports = (client, guild) => {
-    let configejs = ejf('./Data/config.json', {
-        stringify_width: 4,
-        autosave: true
-    });
-    configejs.set(`prefix\.${guild.id}`, config.prefix.default);
-    client.prefix[message.guild.id] = newprefix;
-    delete require.cache[require.resolve('../Data/config.json')];
-    config = require('../Data/config.json');
-    guild.me.setNickname(`ValderBot (${config.prefix.default})`);
+module.exports = async (client, guild) => {
+    if (!(await ServerModel.exists({ _id : guild.id})))
+        await ServerModel.create({ _id : guild.id, prefix : client.prefix.default });
+    const GuildDb = await ServerModel.findById(guild.id);
+    client.prefix[guild.id] = GuildDb.prefix;
+    guild.me.setNickname(`${client.user.username} (${GuildDb.prefix})`);
+    console.log(`Joined server ${guild.name} (${guild.id}).`);
 }

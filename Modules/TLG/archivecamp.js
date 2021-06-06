@@ -1,24 +1,28 @@
 const Discord = require('discord.js');
 const {sep} = require('path');
-const {random} = require('mathjs');
-const ejf = require('edit-json-file');
 const name = __filename.split(sep)[__filename.split(sep).length - 1].replace(/\.[^/.]+$/, "");
 const mod = __dirname.split(sep)[__dirname.split(sep).length - 1];
-const aliases = [name, 'arccamp', 'ac'];
+const aliases = ['arccamp', 'ac'];
+
+const CampModel = require('@data/Schema/camp-schema.js');
 
 module.exports = {
-    name: name,
+    name, aliases,
     module: mod,
-    aliases: aliases,
+    channelType: 1, //-1: direct message only, 0: both, 1: guild channel only
     permission: 'moderators',
+    userPermissionList: [],
+    botPermissionList: [],
+    minArguments: 1,
     
-    description: 'Archive a camp\'s roleplay channel as it\'s finished. The role and the discuss channel is deleted.',
+    description: 'Archive a campaign',
+    usage: `\`<commandname> <campaign>\`\n` +
+        "The campaign name should be wrapped in double quotes if contains a space.",
 
-    async execute(client, message, args) {
+    async execute(client, message, args, joined, embed) {
         const pos = {
             archive : function() {
-                delete require.cache[require.resolve('../../Data/tlg.json')];
-                let tlg = require('../../Data/tlg.json');
+                let tlg = client.util.reloadFile('@data/tlg.json');
                 return Array.from(client.guilds.cache.get(tlg.id).channels.cache.values())
                     .filter(ch => (ch.parentID == tlg.archiveCat))
                     .sort((a, b) => {return b.position - a.position})[0]
@@ -26,19 +30,11 @@ module.exports = {
             },
         };
 
-        const embed = new Discord.MessageEmbed();
-        embed.setAuthor(message.member.nickname ? message.member.nickname : message.author.username, message.author.avatarURL())
-            .setColor(random([3], 256));
-
-        delete require.cache[require.resolve('../../Data/tlg.json')];
-        var {id, archiveCat, campList, noCampRoleID, advLeagueRoleCatID, dmRoleID} = require('../../Data/tlg.json');
+        var {id, archiveCat, noCampRoleID, advLeagueRoleCatID, dmRoleID} = client.util.reloadFile('@data/tlg.json');
+        var campList = await CampModel.find({});
         var guild = client.guilds.resolve(id);
-        let tlgEdit = ejf('./Data/tlg.json', {
-            stringify_width: 4,
-            autosave: true
-        });
         
-        const campName = args.join(' ');
+        const campName = joined;
         const camp = campList.filter(c => c.name.toLowerCase().includes(campName.toLowerCase()))[0];
         if (!camp) {
             embed.setDescription('There is no campaign with such name.');
@@ -56,7 +52,7 @@ module.exports = {
                     });
             });
         if (!cont)
-            return message.reply("campaign deletion cancelled.");
+            return message.channel.send(embed.setDescription("Campaign deletion cancelled."));
         
         const newPos = pos.archive() + 1;
         campList.splice(campList.indexOf(camp), 1);
@@ -72,19 +68,19 @@ module.exports = {
         }
 
         guild.channels.resolve(camp.roleplayChannel).setPosition(newPos);
-        tlgEdit.set("campList", campList);
+        await CampModel.deleteOne({ _id: camp.id });
         const campRoleMaxPos = guild.roles.resolve(noCampRoleID).position,
             campRoleMinPos = guild.roles.resolve(advLeagueRoleCatID).position;
         if (!campList.filter(c => c.DM == camp.DM).length)
             guild.members.resolve(camp.DM).roles.remove(dmRoleID);
         if (!guild.members.resolve(camp.DM).roles.cache.some(r => (r.position > campRoleMinPos && r.position < campRoleMaxPos)))
             guild.members.resolve(camp.DM).roles.add(noCampRoleID);
-        camp.players.forEach(p => {
-            let player = guild.members.resolve(p);
+        for (p of camp.players) {
+            let player = await guild.members.resolve(p);
             if (!player.roles.cache.some(r => (r.position > campRoleMinPos && r.position < campRoleMaxPos)))
-                player.roles.add(noCampRoleID);
-        });
+                await player.roles.add(noCampRoleID);
+        };
         
-        message.reply("campaign archived.");
+        message.channel.send(embed.setDescription("campaign archived."));
     },
 };

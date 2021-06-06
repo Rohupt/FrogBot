@@ -8,7 +8,10 @@ module.exports = {
     module: mod,
     aliases: aliases,
     permission: 'developer',
-    
+    userPermissionList: [],
+    botPermissionList: ['MANAGE_CHANNELS', 'MANAGE_ROLES'],
+    minArguments: 0,
+        
     description: 'List all channels of the server.',
 
     execute(client, message, args) {

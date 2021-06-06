@@ -1,24 +1,32 @@
+const Discord = require('discord.js');
 const {sep} = require('path');
-const {evaluate} = require('mathjs');
 const name = __filename.split(sep)[__filename.split(sep).length - 1].replace(/\.[^/.]+$/, "");
 const mod = __dirname.split(sep)[__dirname.split(sep).length - 1];
-const aliases = [name, 'c', 'evaluate', 'eval'];
+const aliases = ['c', 'evaluate', 'eval'];
+
+const {evaluate} = require('mathjs');
 
 module.exports = {
-    name: name,
+    name, aliases,
     module: mod,
-    aliases: aliases,
+    channelType: 0, //-1: direct message only, 0: both, 1: guild channel only
     permission: 'everyone',
+    userPermissionList: [],
+    botPermissionList: [],
+    minArguments: 1,
     
-    description: 'Calculate the given expression',
+    description: 'Evaluate an expression, using [mathjs](https://mathjs.org/docs/expressions/syntax.html) syntax.',
+    usage: `\`<commandname> 2 * 3 + 4\`\n` +
+            `\`<commandname> 2 inch to cm\`\n` +
+            `\`<commandname> cos(45 deg)\`\n`,
 
-    execute(client, message, args) {
-        if (args.length < 1) {
-            message.channel.send(`Not enough values to calculate. Try \`${client.prefix[message.guild.id]}calc 2+4*10\` or \`${client.prefix[message.guild.id]}calc 10 m to yd\`.`);
-            return
-        }
-        const expr = args.join(' ');
-        const response = `\`\`\`\n${expr}\`\`\`\`\`\`\n= ${evaluate(expr)}\`\`\``
-        message.channel.send(response);
+    async execute(client, message, args, joined, embed) {
+        let result;
+        try { result = evaluate(joined); }
+        catch (err) { result = 'Cannot evaluate the provided expression. Please check the syntax.'; }
+        embed.setDescription(`\`${joined}\``)
+            .addField('Result', `\`${result}\``);
+
+        message.channel.send(embed);
     },
 };

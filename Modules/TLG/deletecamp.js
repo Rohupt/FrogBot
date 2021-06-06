@@ -1,33 +1,30 @@
 const Discord = require('discord.js');
 const {sep} = require('path');
-const {random} = require('mathjs');
-const ejf = require('edit-json-file');
 const name = __filename.split(sep)[__filename.split(sep).length - 1].replace(/\.[^/.]+$/, "");
 const mod = __dirname.split(sep)[__dirname.split(sep).length - 1];
-const aliases = [name, 'delcamp', 'delc', 'dc'];
+const aliases = ['delcamp', 'dc'];
+
+const CampModel = require('@data/Schema/camp-schema.js');
 
 module.exports = {
-    name: name,
+    name, aliases,
     module: mod,
-    aliases: aliases,
+    channelType: 1, //-1: direct message only, 0: both, 1: guild channel only
     permission: 'moderators',
+    userPermissionList: [],
+    botPermissionList: ['MANAGE_CHANNELS', 'MANAGE_ROLES'],
+    minArguments: 0,
     
-    description: 'Delete a camp as well as its channels and role.',
+    description: 'Delete a camp from database, as well as its role and channels',
+    usage: `\`<commandname> <name>\` Delete a campaign named <name>\n` +
+        'The name should be wrapped in double quotes if it contains a space.',
 
-    async execute(client, message, args) {
-        const embed = new Discord.MessageEmbed();
-        embed.setAuthor(message.member.nickname ? message.member.nickname : message.author.username, message.author.avatarURL())
-            .setColor(random([3], 256));
-
-        delete require.cache[require.resolve('../../Data/tlg.json')];
-        var {id, campList} = require('../../Data/tlg.json');
-        const guild = client.guilds.resolve(id);
-        let tlgEdit = ejf('./Data/tlg.json', {
-            stringify_width: 4,
-            autosave: true
-        });
+    async execute(client, message, args, joined, embed) {
+        var tlg = client.util.reloadFile('@data/tlg.json');
+        var campList = await CampModel.find({});
+        const guild = client.guilds.resolve(tlg.id);
         
-        const campName = args.join(' ');
+        const campName = joined;
         const camp = campList.find(c => c.name.toLowerCase().includes(campName.toLowerCase()));
         if (!camp) {
             embed.setDescription('There is no campaign with such name.');
@@ -35,7 +32,8 @@ module.exports = {
         };
 
         var cont = false;
-        await message.reply(`do you really want to delete the campaign \`${camp.name}\`?\nAnything other than \`Absolutely yes\`will be interpreted as \`no\`.`)
+        embed.setDescription(`Do you really want to delete the campaign \`${camp.name}\`?\nAnything other than \`Absolutely yes\`will be interpreted as \`no\`.`)
+        await message.reply(embed)
             .then(async () => {
                 await message.channel.awaitMessages(m => m.author == message.author, {idle : 60000, dispose : true, max : 1, error : ['time']})
                     .then(collected => {
@@ -44,31 +42,30 @@ module.exports = {
                     });
             });
         if (!cont)
-            return message.reply("campaign deletion cancelled.");
+            return message.reply(embed.setDescription("Campaign deletion cancelled."));
         
         try {
             await guild.roles.resolve(camp.role).delete();
             await guild.channels.resolve(camp.discussChannel).delete();
             await guild.channels.resolve(camp.roleplayChannel).delete();
-        } catch (error) {
-            console.error(error);
-            message.reply("...oops, seems like there is an error. Deletion incomplete. Please continue manually.");
-            message.channel.send(`\`\`\`\n${error}\n\`\`\``);
-        }
+        } catch (error) {}
+        const dm = guild.members.resolve(camp.DM);
         
         campList.splice(campList.indexOf(camp), 1);
-        tlgEdit.set("campList", campList);
-        const campRoleMaxPos = guild.roles.resolve(noCampRoleID).position,
-            campRoleMinPos = guild.roles.resolve(advLeagueRoleCatID).position;
-        if (!campList.filter(c => c.DM == camp.DM).length)
-            guild.members.resolve(camp.DM).roles.remove(dmRoleID);
-        if (!guild.members.resolve(camp.DM).roles.cache.some(r => (r.position > campRoleMinPos && r.position < campRoleMaxPos)))
-            guild.members.resolve(camp.DM).roles.add(noCampRoleID);
-        camp.players.forEach(p => {
-            let player = guild.members.resolve(p);
+        const campRoleMaxPos = guild.roles.resolve(tlg.noCampRoleID).position,
+            campRoleMinPos = guild.roles.resolve(tlg.advLeagueRoleCatID).position;
+        if (dm) {
+            if (!campList.filter(c => c.DM == camp.DM).length)
+                dm.roles.remove(tlg.dmRoleID);
+            if (!dm.roles.cache.some(r => (r.position > campRoleMinPos && r.position < campRoleMaxPos)))
+                dm.roles.add(tlg.noCampRoleID);
+        }
+        for (p of camp.players) {
+            let player = await guild.members.resolve(p);
             if (!player.roles.cache.some(r => (r.position > campRoleMinPos && r.position < campRoleMaxPos)))
-                player.roles.add(noCampRoleID);
-        });
-        message.reply("campaign deleted.");
+                await player.roles.add(tlg.noCampRoleID);
+        };
+        await CampModel.deleteOne({ _id: camp.id });
+        message.reply(embed.setDescription("Campaign deleted."));
     },
 };

@@ -1,91 +1,149 @@
 const Discord = require('discord.js');
-const {random} = require('mathjs');
 const {sep} = require('path');
-const ejf = require('edit-json-file');
-
 const name = __filename.split(sep)[__filename.split(sep).length - 1].replace(/\.[^/.]+$/, "");
 const mod = __dirname.split(sep)[__dirname.split(sep).length - 1];
-const aliases = [name, 'mci'];
+const aliases = ['mci'];
+
+const CampModel = require('@data/Schema/camp-schema.js');
+const stateMap = new Map().set('1', 'Finding players').set('2', 'Waiting for start').set('3', 'Running');
 
 module.exports = {
-    name: name,
+    name, aliases,
     module: mod,
-    aliases: aliases,
+    channelType: 1, //-1: direct message only, 0: both, 1: guild channel only
     permission: 'dungeonmasters',
+    userPermissionList: [],
+    botPermissionList: ['MANAGE_CHANNELS', 'MANAGE_ROLES'],
+    minArguments: 2,
     
-    description: 'Modify the information of a campaign.',
+    description: 'Edit the information of a campaign.',
+    usage: `\`<commandname> <campaign> [...<field> <newvalue>]\`\n\n` + 
+        "Campaign name should be wrapped in double quotes if contains a space.\n\n" +
+        "`<field>` is the key of the field to edit, currently supports `--name`/`-n`, `--state`/`-s`, `--description`/`--desc`/`-d`, `--notes`/`--note`/`-o`, and `--switchtype`/`-t`.\n\n" +
+        'If `<field>` is `--state`, `<newvalue>` must be `1`/`"Finding players"`, `2`/`"Waiting for start"`, or `3`/`Running` (DO include the double quotes).\n\n' +
+        'If `<field>` is any other values, `<newvalue>` must be wrapped in double quotes if it containts any spaces or newlines; ' +
+        'and any double quotes (`"`) within `<newvalue>` must be doubled (`""`).\n' +
+        'For example, if you want to rename your campaign `A Vampire Named "Aglio"`, the command will be\n`<commandname> <campaignname> name "A Vampire Named ""Aglio"""`.\n\n' +
+        '`--switchtype` is for changing from oneshot to full camp and vice versa, but you should NOT use this option too rapidly.',
 
-    async execute(client, message, args) {
-        const embed = new Discord.MessageEmbed();
-        const user = client.util.user;
-        embed.setAuthor(message.member.nickname ? message.member.nickname : message.author.username, message.author.avatarURL())
-            .setColor(random([3], 256));
+    async execute(client, message, args, joined, embed) {
+        var tlg = client.util.reloadFile('@data/tlg.json');
+        var campList = await CampModel.find({});
 
-        delete require.cache[require.resolve('../../Data/tlg.json')];
-        var tlg = require('../../Data/tlg.json');
-        let tlgEdit = ejf('./Data/tlg.json', {
-            stringify_width: 4,
-            autosave: true
-        });
-        const guild = client.guilds.resolve(tlg.id);
-        
-        if (args.length < 3) {
-            embed.setDescription("There are not enough arguments to perform this command.");
-            return message.channel.send(embed);
+        const pos = {
+            osRpChannel : function() {
+                let tlg = client.util.reloadFile('@data/tlg.json');
+                return Array.from(client.guilds.cache.get(tlg.id).channels.cache.values())
+                    .filter(ch => (ch.parentID == tlg.roleplayCat && ch.name.startsWith('os')))
+                    .sort((a, b) => {return b.position - a.position})[0]
+                    .position;
+            },
+            osDiscChannel : function() {
+                let tlg = client.util.reloadFile('@data/tlg.json');
+                return Array.from(client.guilds.cache.get(tlg.id).channels.cache.values())
+                    .filter(ch => (ch.parentID == tlg.discussCat && ch.name.startsWith('os')))
+                    .sort((a, b) => {return b.position - a.position})[0]
+                    .position;
+            },
+            osRole : function() {
+                let tlg = client.util.reloadFile('@data/tlg.json');
+                return Array.from(client.guilds.cache.get(tlg.id).roles.cache.values())
+                    .filter(r => r.name.startsWith('OS '))
+                    .sort((a, b) => {return b.position - a.position})[0]
+                    .position;
+            },
+            fullRpChannel : function() {
+                let tlg = client.util.reloadFile('@data/tlg.json');
+                return Array.from(client.guilds.cache.get(tlg.id).channels.cache.values())
+                    .filter(ch => (ch.parentID == tlg.roleplayCat && !ch.name.startsWith('os')))
+                    .sort((a, b) => {return b.position - a.position})[0]
+                    .position;
+            },
+            fullDiscChannel : function() {
+                let tlg = client.util.reloadFile('@data/tlg.json');
+                return Array.from(client.guilds.cache.get(tlg.id).channels.cache.values())
+                    .filter(ch => (ch.parentID == tlg.discussCat && !ch.name.startsWith('os')))
+                    .sort((a, b) => {return b.position - a.position})[0]
+                    .position;
+            },
+            fullRole : function() {
+                let tlg = client.util.reloadFile('@data/tlg.json');
+                return Array.from(client.guilds.cache.get(tlg.id).roles.cache.values())
+                    .filter(r => r.name.startsWith('_'))
+                    .sort((a, b) => {return b.position - a.position})[2]
+                    .position + 2;
+            },
         };
         
-        const camp = tlg.campList.find(c => c.name.toLowerCase().includes(args[0].toLowerCase()));
+        const camp = campList.find(c => c.name.toLowerCase().includes(args[0].toLowerCase()));
         if (!camp) {
             embed.setDescription(`There is no campaign named \`${args[0]}\`.`);
             return message.channel.send(embed);
         };
-        const campIndex = tlg.campList.indexOf(camp);
         embed.setTitle(camp.name);
         if (message.author.id != camp.DM && !message.member.roles.cache.some(r => r.id == tlg.modRoleID) && !message.member.hasPermission('ADMINISTRATOR')) {
             embed.setDescription("You are not the Dungeon Master of this camp, nor a moderator.\nYou cannot use this command.");
             return message.channel.send(embed);
         };
         
-        const stateMap = new Map().set('1', 'Finding players').set('2', 'Waiting for start').set('3', 'Running');
-        switch (args[1]) {
-            case 'name':
-                camp.name = args[2];
-                let rpCh = message.guild.channels.resolve(camp.roleplayChannel);
-                let dcCh = message.guild.channels.resolve(camp.discussChannel);
-                let role = message.guild.roles.resolve(camp.role);
-                if (camp.isOS) {
-                    let chName = 'os ' + camp.name;
-                    rpCh.setName(chName);
-                    dcCh.setName(chName);
-                    role.setName(`OS ${camp.name}`);
-                } else {
-                    rpCh.setName(camp.name);
-                    dcCh.setName(camp.name);
-                    role.setName(camp.name);
-                };
-                break;
-            case 'state':
-                let newState = stateMap.get(args[2]);
-                if (!newState) newState = Array.from(stateMap.values()).find(s => s.toLowerCase().includes(args[2].toLowerCase()));
-                if (!newState) {
-                    embed.setDescription('No new state provided or wrong argument. Modification canceled.');
+        let rpCh = message.guild.channels.resolve(camp.roleplayChannel);
+        let dcCh = message.guild.channels.resolve(camp.discussChannel);
+        let role = message.guild.roles.resolve(camp.role);
+        for (let i = 1; i < args.length; i += 2) {
+            if (!['-t', '--switchtype'].includes(args[i].toLowerCase()))
+                if (!args[i+1] || args[i+1].match(/^-[stond-]/i))
+                    continue;
+            switch (args[i].toLowerCase()) {
+                case '-n':
+                case '--name':
+                    camp.name = args[i+1];
+                    await rpCh.setName(client.util.getCampNames(camp).chName);
+                    await dcCh.setName(client.util.getCampNames(camp).chName);
+                    await role.setName(client.util.getCampNames(camp).roleName);
+                    break;
+                case '-s':
+                case '--state':
+                    let newState = stateMap.get(args[i+1]);
+                    if (!newState) newState = Array.from(stateMap.values()).find(s => s.toLowerCase().includes(args[i+1].toLowerCase()));
+                    if (!newState) {
+                        embed.setDescription('No new state provided or wrong argument. Modification canceled.');
+                        return message.channel.send(embed);
+                    };
+                    camp.state = newState;
+                    break;
+                case '-d':
+                case '--description':
+                case '--desc':
+                    camp.description = args[i+1];
+                    break;
+                case '-o':
+                case '--note':
+                case '--notes':
+                    camp.notes = args[i+1];
+                    break;
+                case '-t':
+                case '--switchtype':
+                    camp.isOS = !camp.isOS;
+                    let rpChPos = camp.isOS ? (pos.osRpChannel() + 1) : (pos.fullRpChannel());
+                    let dcChPos = camp.isOS ? (pos.osDiscChannel() + 1) : (pos.fullDiscChannel());
+                    let rolePos = camp.isOS ? pos.osRole() : pos.fullRole();
+                    console.log(camp.isOS);
+                    console.log(rpChPos, dcChPos, rolePos);
+                    dcCh.setPosition(dcChPos).then((updated) => console.log(updated.position));
+                    rpCh.setPosition(rpChPos).then((updated) => console.log(updated.position));
+                    await role.setPosition(rolePos).then((updated) => console.log(updated.position));
+                    await rpCh.setName(client.util.getCampNames(camp).chName).then((updated) => console.log(updated.name));
+                    await dcCh.setName(client.util.getCampNames(camp).chName).then((updated) => console.log(updated.name));
+                    await role.setName(client.util.getCampNames(camp).roleName).then((updated) => console.log(updated.name));
+                    break;
+                default:
+                    embed.setDescription('Unexpected field. Please insert `--name`/`-n`, `--state`/`-s`, `--description`/`--desc`/`-d`, `--notes`/`--note`/`-o`, or `--switchtype`/`-t`.');
                     return message.channel.send(embed);
-                };
-                camp.state = newState;
-                break;
-            case 'description':
-            case 'desc':
-                camp.description = args[2];
-                break;
-            case 'note':
-            case 'notes':
-                camp.notes = args[2];
-                break;
-            default:
-                embed.setDescription('Unexpected field. Please insert `name`, `state`, `description`/`desc` or `notes`/`note`.');
-                return message.channel.send(embed);
-        };
-        tlgEdit.set(`campList.${campIndex}`, camp);
+            };
+        }
+
+        
+        await CampModel.updateOne({ _id: camp.id }, camp);
         var players = '|';
         camp.players.forEach(p => players += ` ${message.guild.members.resolve(p)} |`);
         embed.setTitle(camp.name)

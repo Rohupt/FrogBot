@@ -1,51 +1,65 @@
 const Discord = require('discord.js');
 const {sep} = require('path');
-const {random} = require('mathjs');
 const name = __filename.split(sep)[__filename.split(sep).length - 1].replace(/\.[^/.]+$/, "");
 const mod = __dirname.split(sep)[__dirname.split(sep).length - 1];
-const aliases = [name, 'campaign', 'campinfo', 'campaigninfo'];
+const aliases = ['camp', 'campaigns', 'campinfo'];
+
+const CampModel = require('@data/Schema/camp-schema.js');
 
 module.exports = {
-    name: name,
+    name, aliases,
     module: mod,
-    aliases: aliases,
+    channelType: 1, //-1: direct message only, 0: both, 1: guild channel only
     permission: 'everyone',
+    userPermissionList: [],
+    botPermissionList: [],
+    minArguments: 0,
     
-    description: 'Show informations of a campaign in the server',
+    description: 'View a list of campaigns, or a particular campaign by name.',
+    usage: `\`<commandname>\` View campaigns list\n\n` +
+        `\`<commandname> -f running\` View list of running campaigns\n\n` +
+        `\`<commandname> -f appliable\` View list of appliable campaigns\n\n` +
+        `\`<commandname> <name>\` View a particular campaign\n` +
+        'The name should be wrapped in double quotes if it contains a space.',
 
-    execute(client, message, args) {
-        const embed = new Discord.MessageEmbed();
-        embed.setAuthor(message.member.nickname ? message.member.nickname : message.author.username, message.author.avatarURL())
-        .setColor(random([3], 256));
+    async execute(client, message, args, joined, embed) {
 
-        delete require.cache[require.resolve('../../Data/tlg.json')];
-        var {campList} = require('../../Data/tlg.json');
+        var campList = await CampModel.find({});
         
         if (!args.length) {
-            let descr = "Here are all the campaigns available:\n";
-            campList = campList.sort((a, b) => a.isOS == b.isOS ? a.name - b.name : a.isOS ? -1 : 1);
-            let i = 0;
-            campList.forEach(camp => {
-                descr += `${++i}. \`${camp.isOS ? '(OS) ' : ''}${camp.name}\`\n`;
-            });
+            let descr = 'There is no campaigns available';
+            if (campList.length){
+                descr = "Here are all the campaigns available:\n";
+                campList = campList.sort((a, b) => a.isOS == b.isOS ? a.name - b.name : a.isOS ? -1 : 1);
+                let i = 0;
+                campList.forEach(camp => {
+                    descr += `${++i}. \`${camp.isOS ? '(OS) ' : ''}${camp.name}\`\n`;
+                });
+            }
             embed.setDescription(descr);
             return message.channel.send(embed);
         };
 
         if (args[0] == '-f') {
             let descr = '';
-            campList = campList.sort((a, b) => a.isOS == b.isOS ? a.name - b.name : a.isOS ? -1 : 1);
+            campList.sort((a, b) => a.isOS == b.isOS ? a.name - b.name : a.isOS ? -1 : 1);
             let i = 0;
             switch (args[1].toLowerCase()) {
                 case 'running':
-                    descr = "Here are all the campaigns currently running:\n";
+                    if (!campList.length) {
+                        descr = "There is no camp running."; break;
+                    }
+                    descr = "Here are all the campaign currently running:\n";
                     campList.forEach(camp => {
                         if (camp.state == 'Running')
                             descr += `${++i}. \`${camp.isOS ? '(OS) ' : ''}${camp.name}\`\n`;
                     });
                     break;
                 case 'appliable':
-                    descr = "Here are all the campaigns available for apply:\n";
+                    if (!campList.length) {
+                        descr = "There is no camp available."; break;
+                    }
+                    descr = "Here are all the campaigns available for applying:\n";
                     campList.forEach(camp => {
                         if (camp.state == 'Finding players')
                             descr += `${++i}. \`${camp.isOS ? '(OS) ' : ''}${camp.name}\`\n`;
@@ -59,7 +73,7 @@ module.exports = {
             return message.channel.send(embed);
         };
         
-        const campName = args.join(' ');
+        const campName = joined;
         const camp = campList.find(c => c.name.toLowerCase().includes(campName.toLowerCase()));
         if (!camp) {
             embed.setDescription('There is no campaign with such name.');

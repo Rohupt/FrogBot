@@ -1,25 +1,28 @@
 const Discord = require('discord.js');
-const {random} = require('mathjs');
 const {sep} = require('path');
 const name = __filename.split(sep)[__filename.split(sep).length - 1].replace(/\.[^/.]+$/, "");
 const mod = __dirname.split(sep)[__dirname.split(sep).length - 1];
-const aliases = [name];
+const aliases = [];
 
 module.exports = {
-    name: name,
+    name, aliases,
     module: mod,
-    aliases: aliases,
+    channelType: 0, //-1: direct message only, 0: both, 1: guild channel only
     permission: 'everyone',
+    userPermissionList: [],
+    botPermissionList: [],
+    minArguments: 0,
     
-    description: 'Get the prefix of the bot',
+    description: 'Get the prefix of the bot. You should only use this when you genuinely forget the prefix.',
+    usage: `\`<pingcommand>\``,
 
-    execute(client, message, args) {
-        const embed = new Discord.MessageEmbed();
-        embed.setAuthor(message.member.nickname ? message.member.nickname : message.author.username, message.author.avatarURL())
-            .setColor(random([3], 256))
-            .setTitle(`Prefix for this server: \`${client.prefix[message.guild.id]}\`.`)
+    async execute(client, message, args, joined, embed) {
+        const prefix = await client.util.commandPrefix(client, message);
+        if (message.content.startsWith(prefix))
+            return message.reply("Look! It's just somewhere around here!");
+        embed.setTitle(`Prefix: \`${prefix}\`.`)
             .setDescription(`You can ping the bot (like, \`@${client.user.tag} prefix\`) to get it again if you forget it.\n`
-            + `By the way, didn't you see it in my nickname?`);
+            + `By the way, couldn't you see it in my nickname?`);
 
         message.channel.send(embed);
     },
