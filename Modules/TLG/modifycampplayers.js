@@ -31,7 +31,6 @@ module.exports = {
             embed.setDescription(`There is no campaign with such name.`);
             return message.channel.send(embed);
         };
-        const campIndex = tlg.campList.indexOf(camp);
         if (message.author.id != camp.DM && !message.member.roles.cache.some(r => r.id == tlg.modRoleID) && !message.member.hasPermission('ADMINISTRATOR')) {
             embed.setDescription("You are not the Dungeon Master of this camp, nor a moderator.\nYou cannot use this command.");
             return message.channel.send(embed);

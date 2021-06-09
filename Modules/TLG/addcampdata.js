@@ -145,7 +145,7 @@ module.exports = {
         '`<newvalue>`s should be wrapped in double quotes (`"`) if it contains a space. Any double quotes within `<newvalue>`s should be doubled (`""`).\n\n' +
         'The bot will automatically find the players based on the role provided.\n\n',
     example: '<commandname>\n--name "A Vampire Named ""Aglio"""\n--dm FrogBot\n--type os\n-s Running\n' +
-        '-rc #roleplay\n-dc #discussion\n--role @role\n-d "A story about a vampire who loves garlics."\n' +
+        '--rc #roleplay\n--dc #discussion\n--role @role\n-d "A story about a vampire who loves garlics."\n' +
         '-o "- Level: 3-8\n\t- All books accepted\n\t- Newbie DM, please gentle\n\t- ""Bonus"" for being a troll."',
 
     async execute(client, message, args, joined, embed) {

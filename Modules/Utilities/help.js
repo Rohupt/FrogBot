@@ -44,7 +44,7 @@ module.exports = {
         } else {
             const command = client.commands.get(client.calls.get(args[0].toLowerCase()));
             if (command) {
-                let displayUsage = command.usage ? command.usage.replaceAll('<commandname>', `${prefix}${command.name}`).replaceAll('<pingcommand>', `@${client.user.tag} ${command.name}`) : 'Updating';
+                let displayUsage = command.usage ? command.usage.replace(new RegExp('<commandname>', 'g'), `${prefix}${command.name}`).replace(new RegExp('<pingcommand>', 'g'), `@${client.user.tag} ${command.name}`) : 'Updating';
                 embed.setTitle(`Command: \`${command.name}\``)
                     .setDescription(`${command.description}\n-----------------------------------------------------------------------------------------------`)
                     .addField('Module', `\`${command.module}\``, true)
@@ -55,7 +55,7 @@ module.exports = {
                     .addField('Bot permission(s)', command.botPermissionList.length == 0 ? 'None' : `\`${command.botPermissionList.join('`\n `')}\``, true)
                     .addField('Usage', displayUsage);
                 if (command.example) {
-                    let displayExample = command.example.replaceAll('<commandname>', `${prefix}${command.name}`).replaceAll('<pingcommand>', `@${client.user.tag} ${command.name}`);
+                    let displayExample = command.example.replace(new RegExp('<commandname>', 'g'), `${prefix}${command.name}`).replace(new RegExp('<pingcommand>', 'g'), `@${client.user.tag} ${command.name}`);
                     embed.addField('Example', `\`\`\`${displayExample}\`\`\``);
                 }
             } else {
