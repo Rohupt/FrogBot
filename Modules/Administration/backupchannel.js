@@ -5,6 +5,8 @@ const mod = __dirname.split(sep)[__dirname.split(sep).length - 1];
 const aliases = ['buc'];
 
 const fetchAll = require('discord-fetch-all');
+const ExcelJS = require('exceljs');
+const FS = require('fs');
 
 module.exports = {
     name, aliases,
@@ -13,7 +15,7 @@ module.exports = {
     permission: '',
     userPermissionList: [],
     botPermissionList: [],
-    minArguments: 2,
+    minArguments: 1,
     
     description: '',
     usage: `\`<commandname>\``,
@@ -27,40 +29,68 @@ module.exports = {
         }
         if (!channel) return message.channel.send(embed.setDescription('Cannot access the channel.'));
         
-        try {
-            guild = await client.guilds.fetch(args[1]);
-        } catch (error) {
-            return message.channel.send(embed.setDescription('Cannot access the guild.'));
-        }
-        if (!guild) return message.channel.send(embed.setDescription('Cannot access the guild.'));
+        // try {
+        //     guild = await client.guilds.fetch(args[1]);
+        // } catch (error) {
+        //     return message.channel.send(embed.setDescription('Cannot access the guild.'));
+        // }
+        // if (!guild) return message.channel.send(embed.setDescription('Cannot access the guild.'));
         
-        let newChannel = await guild.channels.create(channel.name, {
-            topic: channel.topic, nsfw: channel.nsfw,
-        });
+        // let newChannel = await guild.channels.create(channel.name, {
+        //     topic: channel.topic, nsfw: channel.nsfw,
+        // });
 
         let webhooks = new Discord.Collection();
         let messages = await fetchAll.messages(channel, {
-            reverseArray: false, userOnly: false, botOnly: false, pinnedOnly: false
+            reverseArray: true, userOnly: false, botOnly: false, pinnedOnly: false
         });
-        messages.forEach(async msg => {
-            console.log(webhooks);
-            let wh;
-            if (webhooks.has(msg.author.id)) {
-                wh = webhooks.get(msg.author.id)
-                console.log(wh);
+        messages = messages.filter(msg => !msg.system).map(msg => {
+            return {
+                author: {name: msg.author.username, avatarURL: msg.author.displayAvatarURL()},
+                content: msg.content,
+                embeds: msg.embeds.map(em => {
+                    return {
+                        title: em.title, description: em.description,
+                        url: em.url, author: em.author, image: em.image,
+                        fields: em.fields
+                    }
+                }),
+                attachments: msg.attachments.map(a => {
+                    return { attachment: a.attachment, name: a.name, url: a.url, proxyURL: a.proxyURL }
+                }),
             }
-            else {
-                wh = await newChannel.createWebhook(
-                    msg.member.nickname
-                        ? msg.member.nickname : msg.author.username,
-                    {avatar: msg.author.displayAvatarURL()});
-                console.log(wh);
-                webhooks.set(msg.author.id, wh);
-            } 
-            await wh.send(msg.content, [...msg.attachments.values(), ...msg.embeds])
-                .then(m => console.log(wh.id, wh.name));
-        });
-        webhooks.forEach(async wh => {await wh.delete()});
-        message.channel.send(embed.setDescription(`Back up finished. [Click here](https://discord.com/channels/${newChannel.guild.id}/${newChannel.id}) to go to the channel.`));
+        })
+        
+        const workbook = new ExcelJS.Workbook();
+        workbook.creator = 'FrogBot#0468';
+        workbook.created = new Date();
+        workbook.views = [{
+            x: 0, y: 0, width: 10000, height: 20000,
+            firstSheet: 0, activeTab: 1, visibility: 'visible'
+        }];
+
+        const sheet = workbook.addWorksheet('Messages');
+
+        sheet.columns = [
+            { header: 'AUTHOR', key: 'author', width: 20 },
+            { header: 'CONTENT', key: 'content', width: 80 },
+            { header: 'ATTACHMENTS', key: 'attachments', width: 40 },
+            { header: 'EMBEDS', key: 'embeds', width: 40},
+        ]
+
+        for (let i = 0; i < messages.length; i++) {
+            let message = messages[i];
+            let embeds = '', attachments = '';
+            if (message.embeds.length)
+                embeds = JSON.stringify(message.embeds, null, 4);
+            if (message.attachments.length)
+                attachments = message.attachments.map(a => a.attachment).join('\n');
+            sheet.addRow({author: message.author.name, content: message.content.replace(new RegExp('\\n', 'g'), '\n'), embeds: embeds, attachments: attachments});
+
+        };
+        await workbook.xlsx.writeFile(`Data/Archives/${channel.name}.xlsx`);
+
+        await message.channel.send([embed.setDescription('Archive completed.'), new Discord.MessageAttachment(`Data/Archives/${channel.name}.xlsx`)]);
+        FS.unlink(`Data/Archives/${channel.name}.xlsx`, err => {if (err) console.error(err)});
     },
 };

@@ -1,6 +1,6 @@
 const chokidar = require('chokidar');
 const {sep} = require('path');
-var watcher = chokidar.watch('./', {ignored: ['./Tests', /(^|[\/\\])\../], cwd: '.'});
+var watcher = chokidar.watch('./', {ignored: ['./Test', /(^|[\/\\])\../], cwd: '.'});
 
 module.exports = {
     watcher: watcher,
