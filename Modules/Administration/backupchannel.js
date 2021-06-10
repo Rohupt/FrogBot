@@ -7,6 +7,7 @@ const aliases = ['buc'];
 const fetchAll = require('discord-fetch-all');
 const ExcelJS = require('exceljs');
 const FS = require('fs');
+const OS = require('os');
 
 module.exports = {
     name, aliases,
@@ -29,18 +30,6 @@ module.exports = {
         }
         if (!channel) return message.channel.send(embed.setDescription('Cannot access the channel.'));
         
-        // try {
-        //     guild = await client.guilds.fetch(args[1]);
-        // } catch (error) {
-        //     return message.channel.send(embed.setDescription('Cannot access the guild.'));
-        // }
-        // if (!guild) return message.channel.send(embed.setDescription('Cannot access the guild.'));
-        
-        // let newChannel = await guild.channels.create(channel.name, {
-        //     topic: channel.topic, nsfw: channel.nsfw,
-        // });
-
-        let webhooks = new Discord.Collection();
         let messages = await fetchAll.messages(channel, {
             reverseArray: true, userOnly: false, botOnly: false, pinnedOnly: false
         });
@@ -88,9 +77,10 @@ module.exports = {
             sheet.addRow({author: message.author.name, content: message.content.replace(new RegExp('\\n', 'g'), '\n'), embeds: embeds, attachments: attachments});
 
         };
-        await workbook.xlsx.writeFile(`./Data/Archives/${channel.name}.xlsx`);
+        const path = (OS.platform() == 'linux' ? '/app/' : '') + `Data/Archives/${channel.name}.xlsx`;
+        await workbook.xlsx.writeFile(path);
 
-        await message.channel.send([embed.setDescription('Archive completed.'), new Discord.MessageAttachment(`./Data/Archives/${channel.name}.xlsx`)]);
-        FS.unlink(`./Data/Archives/${channel.name}.xlsx`, err => {if (err) console.error(err)});
+        await message.channel.send([embed.setDescription('Archive completed.'), new Discord.MessageAttachment(path)]);
+        FS.unlink(path, err => {if (err) console.error(err)});
     },
 };
