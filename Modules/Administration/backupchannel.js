@@ -77,7 +77,7 @@ module.exports = {
             sheet.addRow({author: message.author.name, content: message.content.replace(new RegExp('\\n', 'g'), '\n'), embeds: embeds, attachments: attachments});
 
         };
-        const path = (OS.platform() == 'linux' ? '/app/' : '') + `Data/Archives/${channel.name}.xlsx`;
+        const path = `Data/Archives/${channel.name}.xlsx`;
         await workbook.xlsx.writeFile(path);
 
         await message.channel.send([embed.setDescription('Archive completed.'), new Discord.MessageAttachment(path)]);
