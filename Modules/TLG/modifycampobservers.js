@@ -17,28 +17,32 @@ module.exports = {
     
     description: 'Add or remove observers of a campaign.\n' +
         'Observers can view the channels and talk in discussion channel, but cannot interfere in the roleplay channel.\n',
-    usage: `\`<commandname> <campaign> + <addlist> - <removelist>\`\n` +
+    usage: `\`<commandname> (<campaign>) + <addlist> - <removelist>\`\n` +
         "Names should be wrapped in double quotes if contains a space.\n" +
+        "`<campaign>` can be omitted if you use this command in the campaign's own channels.\n" +
         "You can swap `+` and `-` signs and the corresponding lists, but the signs must be separated from any names by a space.\n" +
-        "If both `+` and `-` are omitted, players in the list will be removed, and non-players in the list will be added.",
+        "If both `+` and `-` are omitted, observers in the list will be removed, and non-observers in the list will be added.",
 
     async execute(client, message, args, joined, embed) {
         var tlg = client.util.reloadFile('@data/tlg.json');
         const guild = client.guilds.resolve(tlg.id);
         var campList = await CampModel.find({});
         
-        const camp = campList.find(c => c.name.toLowerCase().includes(args[0].toLowerCase()));
+        let camp = null, campVar = true;
+        camp = campList.find(c => c.name.toLowerCase().includes(args[0].toLowerCase()));
         if (!camp) {
-            embed.setDescription(`There is no campaign named \`${args[0]}\`.`);
-            return message.channel.send(embed);
-        };
-        const campIndex = tlg.campList.indexOf(camp);
+            camp = campList.find(c => (c.discussChannel == message.channel.id || c.roleplayChannel == message.channel.id));
+            campVar = false;
+        }
+        if (!camp)
+            return message.channel.send(embed.setDescription("Please enter the camp name."));
+        
         if (message.author.id != camp.DM && !message.member.roles.cache.some(r => r.id == tlg.modRoleID) && !message.member.hasPermission('ADMINISTRATOR')) {
             embed.setDescription("You are not the Dungeon Master of this camp, nor a moderator.\nYou cannot use this command.");
             return message.channel.send(embed);
         };
         
-        if (args.length <= 1) {
+        if (campVar && args.length <= 1 || !campVar && args.length <= 2) {
             embed.setDescription("Please provide at least some names.");
             return message.channel.send(embed);
         };
@@ -47,42 +51,49 @@ module.exports = {
         const aPos = args.indexOf('+'), rPos = args.indexOf('-');
         let addList = [], removeList = [];
         if (aPos == -1 && rPos == -1) {
-            args.slice(1).forEach(arg => {
-                if (user(message, arg)) {
-                    if (!camp.players.includes(user(message, arg).id)) {
-                        if (rpCh.permissionOverwrites.has(user(message, arg).id)) removeList.push(user(message, arg));
-                        else addList.push(user(message, arg));
+            args.slice(campVar ? 1 : 0 + 0).forEach(arg => {
+                let mem = client.util.user(message.guild, arg);
+                if (mem) {
+                    if (!camp.players.includes(mem.id)) {
+                        if (rpCh.permissionOverwrites.has(mem.id)) removeList.push(mem);
+                        else addList.push(mem);
                     };
                 };
             });
         } else if (aPos > -1 && rPos == -1) {
-            args.slice(2).forEach(arg => {
-                if (user(message, arg) && !camp.players.includes(user(message, arg).id))
-                    addList.push(user(message, arg));
+            args.slice(campVar ? 1 : 0 + 1).forEach(arg => {
+                let mem = client.util.user(message.guild, arg);
+                if (mem && !camp.players.includes(mem.id))
+                    addList.push(mem);
             });
         } else if (aPos == -1 && rPos > -1) {
-            args.slice(2).forEach(arg => {
-                if (user(message, arg) && !camp.players.includes(user(message, arg).id))
-                    removeList.push(user(message, arg));
+            args.slice(campVar ? 1 : 0 + 1).forEach(arg => {
+                let mem = client.util.user(message.guild, arg);
+                if (mem && !camp.players.includes(mem.id))
+                    removeList.push(mem);
             });
         } else if (aPos > -1 && rPos > -1) {
             if (aPos < rPos) {
                 args.slice(aPos + 1, rPos).forEach(arg => {
-                    if (user(message, arg) && !camp.players.includes(user(message, arg).id))
-                        addList.push(user(message, arg));
+                    let mem = client.util.user(message.guild, arg);
+                    if (mem && !camp.players.includes(mem.id))
+                        addList.push(mem);
                 });
                 args.slice(rPos + 1).forEach(arg => {
-                    if (user(message, arg) && !camp.players.includes(user(message, arg).id))
-                        removeList.push(user(message, arg));
+                    let mem = client.util.user(message.guild, arg);
+                    if (mem && !camp.players.includes(mem.id))
+                        removeList.push(mem);
                 });
             } else if (rPos < aPos) {
                 args.slice(rPos + 1, aPos).forEach(arg => {
-                    if (user(message, arg) && !camp.players.includes(user(message, arg).id))
-                        removeList.push(user(message, arg));
+                    let mem = client.util.user(message.guild, arg);
+                    if (mem && !camp.players.includes(mem.id))
+                        removeList.push(mem);
                 });
                 args.slice(aPos + 1).forEach(arg => {
-                    if (user(message, arg) && !camp.players.includes(user(message, arg).id))
-                        addList.push(user(message, arg));
+                    let mem = client.util.user(message.guild, arg);
+                    if (mem && !camp.players.includes(mem.id))
+                        addList.push(mem);
                 });
             };
         };

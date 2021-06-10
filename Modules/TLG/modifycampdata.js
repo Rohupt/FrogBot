@@ -5,12 +5,12 @@ const mod = __dirname.split(sep)[__dirname.split(sep).length - 1];
 const aliases = ['mcd'];
 
 const CampModel = require('@data/Schema/camp-schema.js');
-const stateMap = new Map().set('1', 'Finding players').set('2', 'Waiting for start').set('3', 'Running');
-
-function editCampData(client, message, args, embed, guild, camp) {
-    
-    return camp;
-}
+const stateMap = new Map([
+    ['1', 'Finding players'],
+    ['2', 'Waiting for start'],
+    ['3', 'Running'],
+    ['4', 'Paused']
+]);
 
 module.exports = {
     name, aliases,
@@ -23,11 +23,11 @@ module.exports = {
     
     description: 'Edit the data of a campaign in database. It does not affect the channels and role.\nOnly use this to fix incorrect data.',
     usage: "`<commandname> [...<field> <value>]`\n\n" +
-        "The options include:\n`--name`/`-n` \n`--type`/`-t`\n`--state`/`-s`\n`--dungeonmaster`/`--dm`/`-m` \n`--roleplaychannel`/`--rc`/`-p` \n" +
+        "The options are:\n`--name`/`-n` \n`--type`/`-t`\n`--state`/`-s`\n`--dungeonmaster`/`--dm`/`-m` \n`--roleplaychannel`/`--rc`/`-p` \n" +
         "`--discussionchannel`/`--dc`/`-c` \n`--role`/`-r` \n`--description`/`--desc`/`-d`\n`--notes`/`--note`/`-o`.\n\n" +
         "Make sure the campaign's name, DM, role and channels are always present.\n\n" +
         "If `--type` is anything different than `os`, or no `--type` at all, it will be a full camp.\n\n" +
-        '`--state` must be `1`/`"Finding players"`, `2`/`"Waiting for start"`, or `3`/`Running` (DO include the double quotes).\n\n' +
+        '`--state` must be `1`/`"Finding players"`, `2`/`"Waiting for start"`, `3`/`Running` or `4`/`Paused` (DO include the double quotes).\n\n' +
         '`<newvalue>`s should be wrapped in double quotes (`"`) if it contains a space. Any double quotes within `<newvalue>`s should be doubled (`""`).\n\n',
 
     async execute(client, message, args, joined, embed) {
@@ -45,7 +45,7 @@ module.exports = {
             .addField("Roleplay Channel", `<#${camp.roleplayChannel}>`, true)
             .addField("Discuss Channel", `<#${camp.discussChannel}>`, true)
             .addField("Role", `<@&${camp.role}>`, true)
-            .addField("Players", camp.players.length ? `| <@!${camp.players.join('> | <@!')}> |` : 'None');
+            .addField("Players", camp.players.length ? `| <@!${camp.players.map(p => p.id).join('> | <@!')}> |` : 'None');
         
         var tlg = client.util.reloadFile('@data/tlg.json');
         const guild = client.guilds.resolve(tlg.id);
@@ -65,7 +65,7 @@ module.exports = {
                 case '-m':
                 case '--dm':
                 case '--dungeonmaster':
-                    let dm = guild.members.resolve(client.util.user(message, args[i+1]));
+                    let dm = guild.members.resolve(client.util.user(message.guild, args[i+1]));
                     if (dm) camp.DM = dm.id;
                     else {
                         embed.setDescription('Could not find the DM.');
@@ -86,7 +86,7 @@ module.exports = {
                 case '-p':
                 case '--rc':
                 case '--roleplaychannel':
-                    let rpCh = client.util.channel(message, args[i+1]);
+                    let rpCh = client.util.channel(message.guild, args[i+1]);
                     if (rpCh) camp.roleplayChannel = rpCh.id;
                     else {
                         embed.setDescription('Could not find the roleplay channel.');
@@ -97,7 +97,7 @@ module.exports = {
                 case '-c':
                 case '--dc':
                 case '--discussionchannel':
-                    let dcCh = client.util.channel(message, args[i+1]);
+                    let dcCh = client.util.channel(message.guild, args[i+1]);
                     if (dcCh) camp.discussChannel = dcCh.id;
                     else {
                         embed.setDescription('Could not find the discussion channel.');
@@ -107,7 +107,7 @@ module.exports = {
                     break;
                 case '-r':
                 case '--role':
-                    let role = client.util.role(message, args[i+1]);
+                    let role = client.util.role(message.guild, args[i+1]);
                     if (role) camp.role = role.id;
                     else {
                         embed.setDescription('Could not find the discussion channel.');

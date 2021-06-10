@@ -31,6 +31,6 @@ module.exports = {
         };
 
         await CampModel.deleteOne({ _id: camp.id });
-        message.reply(embed.setDescription("Campaign deleted."));
+        message.reply(embed.setDescription("Campaign data deleted."));
     },
 };

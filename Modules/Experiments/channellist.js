@@ -1,7 +1,7 @@
 const {sep} = require('path');
 const name = __filename.split(sep)[__filename.split(sep).length - 1].replace(/\.[^/.]+$/, "");
 const mod = __dirname.split(sep)[__dirname.split(sep).length - 1];
-const aliases = [name, 'cl'];
+const aliases = ['cl'];
 
 module.exports = {
     name: name,
@@ -13,6 +13,7 @@ module.exports = {
     minArguments: 0,
         
     description: 'List all channels of the server.',
+    usage: '`<commandname>`',
 
     execute(client, message, args) {
         const channels = message.guild.channels.cache;

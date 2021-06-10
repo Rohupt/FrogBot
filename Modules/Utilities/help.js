@@ -16,6 +16,13 @@ function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
+function replaceAll(str, patterns) {
+    patterns.forEach((value, key) => {
+        str = str.replace(new RegExp(key, 'g'), value);
+    });
+    return str;
+}
+
 module.exports = {
     name, aliases,
     module: mod,
@@ -44,7 +51,11 @@ module.exports = {
         } else {
             const command = client.commands.get(client.calls.get(args[0].toLowerCase()));
             if (command) {
-                let displayUsage = command.usage ? command.usage.replace(new RegExp('<commandname>', 'g'), `${prefix}${command.name}`).replace(new RegExp('<pingcommand>', 'g'), `@${client.user.tag} ${command.name}`) : 'Updating';
+                const ReplaceMap = new Map([
+                    ['<commandname>', `${prefix}${command.name}`],
+                    ['<pingcommand>', `@${client.user.tag} ${command.name}`]
+                ]);
+                let displayUsage = command.usage ? replaceAll(command.usage, ReplaceMap) : 'Updating';
                 embed.setTitle(`Command: \`${command.name}\``)
                     .setDescription(`${command.description}\n-----------------------------------------------------------------------------------------------`)
                     .addField('Module', `\`${command.module}\``, true)
@@ -55,7 +66,7 @@ module.exports = {
                     .addField('Bot permission(s)', command.botPermissionList.length == 0 ? 'None' : `\`${command.botPermissionList.join('`\n `')}\``, true)
                     .addField('Usage', displayUsage);
                 if (command.example) {
-                    let displayExample = command.example.replace(new RegExp('<commandname>', 'g'), `${prefix}${command.name}`).replace(new RegExp('<pingcommand>', 'g'), `@${client.user.tag} ${command.name}`);
+                    let displayExample = replaceAll(command.example, ReplaceMap);
                     embed.addField('Example', `\`\`\`${displayExample}\`\`\``);
                 }
             } else {

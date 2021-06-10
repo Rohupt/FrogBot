@@ -9,6 +9,16 @@ const exitMsg = "\nYou can always type `exit` or `cancel` to cancel this process
 const timeoutMsg = "you didn't response for some time. Camp creation cancelled."
 const cancelMsg = "Camp creation cancelled."
 
+const MessageToDM = "You will take control of your campaign from here. Below are some useful commands:\n\n" +
+    "`campaign`/`camp` View the campaign's details\n" +
+    "`playerinfo`/`pi` View character sheet and token link\n" +
+    "`modifycampplayers`/`mcp` Add or remove players to/from your campaign\n" +
+    "`modifycampobservers`/`mco` Add or remove observers to/from your campaign (*)\n" +
+    "`modifycampinfo`/`mci` Modify details like status and description of the campaign\n" +
+    "`modifyplayerinfo`/`mpi` Modify character sheet and token link\n\n" +
+    "Please remember to set your camp's status to `1`/`\"Finding players\"`, `2`/`\"Waiting for start\"`, `3`/`Running` or `4`/`Paused` (DO include the double quotes) when necessary.\n\n" +
+    "**Have fun with your game! NAT 20!**";
+
 async function createCamp(client, message, embed, guild) {
     const newCamp = {
         name: "",
@@ -85,7 +95,7 @@ async function createCamp(client, message, embed, guild) {
                 .then(collected => {
                     const content = collected.first().content;
                     if (content != 'exit' && content != 'cancel') {
-                        let DM = guild.members.resolve(client.util.user(collected.first(), collected.first().content))
+                        let DM = guild.members.resolve(client.util.user(guild, collected.first().content))
                         if (DM) newCamp.DM = DM.id;
                     } else {
                         exit = true;
@@ -181,7 +191,7 @@ function createCampShorthand(client, message, args, embed, guild) {
             case '-m':
             case '--dm':
             case '--dungeonmaster':
-                let dm = guild.members.resolveID(client.util.user(message, args[i+1]));
+                let dm = guild.members.resolveID(client.util.user(args[i+1]));
                 if (dm) newCamp.DM = dm;
                 else {
                     embed.setDescription('Cannot find the DM.');
@@ -364,6 +374,11 @@ module.exports = {
         guild.members.resolve(newCamp.DM).roles.add([role, guild.roles.resolve(tlg.dmRoleID)]);
         rpCh.send(`${role} This is roleplay channel.`);
         dcCh.send(`${role} This is discussion channel.`);
+
+        dmMsgEmbed = client.util.newReturnEmbed(message, await guild.members.resolve(newCamp.DM))
+            .setTitle(`Welcome to campaign "${newCamp.name}"!`)
+            .setDescription(MessageToDM);
+        dcCh.send(`<@!${newCamp.DM}>`, dmMsgEmbed);
         
         embed.setDescription("Campaign creation completed. Here are the initial details of the camp:");
         message.channel.send(embed);

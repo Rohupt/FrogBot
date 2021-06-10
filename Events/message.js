@@ -1,7 +1,6 @@
 const {pickRandom} = require('mathjs');
 const replies = require('@data/replies.json');
 const tlg = require('@data/tlg.json');
-const config = require('@data/config.json');
 
 function getArgs(message) {
     var doubleDoubleQuote = '<DDQ>', spaceMarker = '<SP>', newLineMarker = '<NL>', tabMarker = '<T>';
@@ -63,7 +62,7 @@ function checkChannel(message, command, embed) {
 function checkUserPermission(message, command) {
     switch (command.permission) {
         case 'developer':
-            return (message.author.id == config.ownerID);
+            return (message.author.id == process.env.OWNER_ID);
         case 'owner':
             return (message.member == message.guild.owner);
         case 'administrators':
@@ -87,7 +86,7 @@ function checkUserPermission(message, command) {
         case 'everyone':
             return true;
         default:
-            return (message.author.id == config.ownerID);
+            return (message.author.id == process.env.OWNER_ID);
     }
 }
 
@@ -109,8 +108,7 @@ async function executeCommand(client, message) {
     if ((!message.content.startsWith(`<@!${client.user.id}>`) && !message.content.startsWith(prefix)) || (message.content.startsWith(prefix + ' '))) return;
     
     //check developerMode
-    let config = client.util.reloadFile('@data/config.json');
-    if (config.developerMode && message.author.id != config.ownerID)
+    if ((await client.util.config()).developerMode && message.author.id != process.env.OWNER_ID)
         return message.reply(pickRandom(replies.developerMode));
     
     //get command
@@ -133,17 +131,16 @@ async function executeCommand(client, message) {
     }
     
     //check permissions
-    if (!checkUserPermission(message, command, config))
+    if (!checkUserPermission(message, command))
         return message.reply(pickRandom(replies[command.permission]));
     if (!checkBotPermission(message, command, embed)) return;
     
     try {
         await command.execute(client, message, args, joined, embed)
-            .then(console.log('Command executed successfully.\n'));
     } catch (error) {
-        console.error(error);
-        message.reply('there was an error trying to execute that command!');
+        throw error;
     }
+    console.log('Command executed successfully.\n');
 }
 
 module.exports = async (client, message) => {

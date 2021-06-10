@@ -30,7 +30,7 @@ module.exports = {
             return message.channel.send(embed);
         };
 
-        const newDM = guild.members.resolve(user(message, args[1]));
+        const newDM = guild.members.resolve(user(message.guild, args[1]));
         if (!newDM) {
             embed.setDescription("Please provide a new DM's identity.");
             return message.channel.send(embed);
@@ -43,11 +43,11 @@ module.exports = {
 
         const rpCh = guild.channels.resolve(camp.roleplayChannel), dcCh = guild.channels.resolve(camp.discussChannel);
         camp.DM = newDM.id;
-        rpCh.permissionOverwrites.get(oldDM.id).delete();
-        dcCh.permissionOverwrites.get(oldDM.id).delete();
+        if (rpCh.permissionOverwrites.get(oldDM.id)) rpCh.permissionOverwrites.get(oldDM.id).delete();
+        if (dcCh.permissionOverwrites.get(oldDM.id)) dcCh.permissionOverwrites.get(oldDM.id).delete();
         if (!camp.players.some(p => p == oldDM.id))
             oldDM.roles.remove(camp.role);
-        if (!tlg.campList.filter(c => c.DM == oldDM.id).length)
+        if (!campList.filter(c => c.DM == oldDM.id).length)
             oldDM.roles.remove(tlg.dmRoleID);
         
         newDM.roles.add([camp.role, tlg.dmRoleID]);

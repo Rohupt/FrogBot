@@ -61,7 +61,7 @@ module.exports = {
                 dm.roles.add(tlg.noCampRoleID);
         }
         for (p of camp.players) {
-            let player = await guild.members.resolve(p);
+            let player = await guild.members.resolve(p.id);
             if (!player.roles.cache.some(r => (r.position > campRoleMinPos && r.position < campRoleMaxPos)))
                 await player.roles.add(tlg.noCampRoleID);
         };

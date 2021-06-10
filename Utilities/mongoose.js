@@ -1,7 +1,5 @@
 const mongoose = require('mongoose');
-const config = require('@data/config.json');
-
-const mongoPath = config.mongo;
+const mongoPath = process.env.MONGO;
 
 module.exports = async () => {
     await mongoose.connect(mongoPath, {

@@ -5,7 +5,12 @@ const mod = __dirname.split(sep)[__dirname.split(sep).length - 1];
 const aliases = ['mci'];
 
 const CampModel = require('@data/Schema/camp-schema.js');
-const stateMap = new Map().set('1', 'Finding players').set('2', 'Waiting for start').set('3', 'Running');
+const stateMap = new Map([
+    ['1', 'Finding players'],
+    ['2', 'Waiting for start'],
+    ['3', 'Running'],
+    ['4', 'Paused']
+]);
 
 module.exports = {
     name, aliases,
@@ -17,10 +22,10 @@ module.exports = {
     minArguments: 2,
     
     description: 'Edit the information of a campaign.',
-    usage: `\`<commandname> <campaign> [...<field> <newvalue>]\`\n\n` + 
-        "Campaign name should be wrapped in double quotes if contains a space.\n\n" +
+    usage: `\`<commandname> (<campaign>) [...<field> <newvalue>]\`\n\n` + 
+        "Campaign name should be wrapped in double quotes if contains a space. It can be omitted if you use the command in the campaign's own channels.\n\n" +
         "`<field>` is the key of the field to edit, currently supports `--name`/`-n`, `--state`/`-s`, `--description`/`--desc`/`-d`, `--notes`/`--note`/`-o`, and `--switchtype`/`-t`.\n\n" +
-        'If `<field>` is `--state`, `<newvalue>` must be `1`/`"Finding players"`, `2`/`"Waiting for start"`, or `3`/`Running` (DO include the double quotes).\n\n' +
+        'If `<field>` is `--state`, `<newvalue>` must be `1`/`"Finding players"`, `2`/`"Waiting for start"`, `3`/`Running` or `4`/`Paused` (DO include the double quotes).\n\n' +
         'If `<field>` is any other values, `<newvalue>` must be wrapped in double quotes if it containts any spaces or newlines; ' +
         'and any double quotes (`"`) within `<newvalue>` must be doubled (`""`).\n' +
         'For example, if you want to rename your campaign `A Vampire Named "Aglio"`, the command will be\n`<commandname> <campaignname> name "A Vampire Named ""Aglio"""`.\n\n' +
@@ -75,11 +80,20 @@ module.exports = {
             },
         };
         
-        const camp = campList.find(c => c.name.toLowerCase().includes(args[0].toLowerCase()));
+        let camp = null, campVar = true;
+        camp = campList.find(c => c.name.toLowerCase().includes(args[0].toLowerCase()));
         if (!camp) {
-            embed.setDescription(`There is no campaign named \`${args[0]}\`.`);
+            camp = campList.find(c => (c.discussChannel == message.channel.id || c.roleplayChannel == message.channel.id));
+            campVar = false;
+        }
+        if (!camp)
+            return message.channel.send(embed.setDescription("Please enter the camp name."));
+        
+        if (message.author.id != camp.DM && !message.member.roles.cache.some(r => r.id == tlg.modRoleID) && !message.member.hasPermission('ADMINISTRATOR')) {
+            embed.setDescription("You are not the Dungeon Master of this camp, nor a moderator.\nYou cannot use this command.");
             return message.channel.send(embed);
         };
+        
         embed.setTitle(camp.name);
         if (message.author.id != camp.DM && !message.member.roles.cache.some(r => r.id == tlg.modRoleID) && !message.member.hasPermission('ADMINISTRATOR')) {
             embed.setDescription("You are not the Dungeon Master of this camp, nor a moderator.\nYou cannot use this command.");
@@ -89,7 +103,7 @@ module.exports = {
         let rpCh = message.guild.channels.resolve(camp.roleplayChannel);
         let dcCh = message.guild.channels.resolve(camp.discussChannel);
         let role = message.guild.roles.resolve(camp.role);
-        for (let i = 1; i < args.length; i += 2) {
+        for (let i = campVar ? 1 : 0; i < args.length; i += 2) {
             if (!['-t', '--switchtype'].includes(args[i].toLowerCase()))
                 if (!args[i+1] || args[i+1].match(/^-[stond-]/i))
                     continue;
@@ -145,7 +159,7 @@ module.exports = {
         
         await CampModel.updateOne({ _id: camp.id }, camp);
         var players = '|';
-        camp.players.forEach(p => players += ` ${message.guild.members.resolve(p)} |`);
+        camp.players.forEach(p => players += ` ${message.guild.members.resolve(p.id)} |`);
         embed.setTitle(camp.name)
             .setDescription('Modification completed. Please recheck:')
             .addField("Type", camp.isOS ? "Oneshot" : "Full", true)

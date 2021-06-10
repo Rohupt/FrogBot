@@ -71,12 +71,13 @@ module.exports = {
         await CampModel.deleteOne({ _id: camp.id });
         const campRoleMaxPos = guild.roles.resolve(noCampRoleID).position,
             campRoleMinPos = guild.roles.resolve(advLeagueRoleCatID).position;
-        if (!campList.filter(c => c.DM == camp.DM).length)
+        if (!campList.filter(c => c.DM == camp.DM).length) {
             guild.members.resolve(camp.DM).roles.remove(dmRoleID);
-        if (!guild.members.resolve(camp.DM).roles.cache.some(r => (r.position > campRoleMinPos && r.position < campRoleMaxPos)))
-            guild.members.resolve(camp.DM).roles.add(noCampRoleID);
+            if (!guild.members.resolve(camp.DM).roles.cache.some(r => (r.position > campRoleMinPos && r.position < campRoleMaxPos)))
+                guild.members.resolve(camp.DM).roles.add(noCampRoleID);
+        }
         for (p of camp.players) {
-            let player = await guild.members.resolve(p);
+            let player = await guild.members.resolve(p.id);
             if (!player.roles.cache.some(r => (r.position > campRoleMinPos && r.position < campRoleMaxPos)))
                 await player.roles.add(noCampRoleID);
         };

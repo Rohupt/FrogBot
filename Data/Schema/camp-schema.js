@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const CampSchema = mongoose.Schema({
+const CampSchema = new mongoose.Schema({
     name: {type: String, required: true},
     isOS: {type: Boolean, required: true},
     DM: String,
@@ -10,7 +10,11 @@ const CampSchema = mongoose.Schema({
     notes: {type: String, default: ''},
     roleplayChannel: String,
     discussChannel: String,
-    players: Array
+    players: [{
+        id: {type: String, required: true},
+        sheet: {type: String, default: ''},
+        token: {type: String, default: ''}
+    }]
 });
 
-module.exports = mongoose.model('camps', CampSchema);
+module.exports = mongoose.model('Camp', CampSchema, 'camps');

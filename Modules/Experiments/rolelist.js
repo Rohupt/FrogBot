@@ -1,7 +1,7 @@
 const {sep} = require('path');
 const name = __filename.split(sep)[__filename.split(sep).length - 1].replace(/\.[^/.]+$/, "");
 const mod = __dirname.split(sep)[__dirname.split(sep).length - 1];
-const aliases = [name, 'rl'];
+const aliases = ['rl'];
 
 module.exports = {
     name: name,
@@ -13,6 +13,7 @@ module.exports = {
     minArguments: 0,
     
     description: 'List all roles of the server.',
+    usage: '`<commandname>`',
 
     execute(client, message, args) {
         const roles = message.guild.roles.cache;

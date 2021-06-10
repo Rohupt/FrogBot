@@ -4,8 +4,6 @@ const name = __filename.split(sep)[__filename.split(sep).length - 1].replace(/\.
 const mod = __dirname.split(sep)[__dirname.split(sep).length - 1];
 const aliases = ['devm', 'dm', 'devmode'];
 
-const ejf = require('edit-json-file');
-
 module.exports = {
     name, aliases,
     module: mod,
@@ -25,14 +23,8 @@ module.exports = {
         '\tCorresponding options: `reverse, REVERSE, r, R, -1, /`',
 
     async execute(client, message, args, joined, embed) {
-        let config = client.util.reloadFile('@data/config.json');
-        let configejf = ejf('/app/Data/config.json', {
-            stringify_width: 4,
-            autosave: true
-        });
-        console.log(configejf);
         if (!args.length) {
-            embed.setDescription(`Developer Mode is currently \`${config.developerMode ? 'ON' : 'OFF'}\`.`);
+            embed.setDescription(`Developer Mode is currently \`${client.developerMode ? 'ON' : 'OFF'}\`.`);
         } else {
             var state;
             if (['enable', 'ENABLE', 'true', 'TRUE', 'on', 'ON', 't', 'T', '1', '+'].includes(args[0]))
@@ -40,13 +32,13 @@ module.exports = {
             else if (['disable', 'DISABLE', 'false', 'FALSE', 'off', 'OFF', 'f', 'F', '0', '-'].includes(args[0]))
                 state = false;
             else if (['reverse', 'REVERSE', 'r', 'R', '-1', '/'].includes(args[0]))
-                state = !config.developerMode;
-            else {
-                message.reply("that's not the expected input.");
-                return;
-            };
+                state = !client.developerMode;
+            else
+                return message.reply(embed.setDescription("That's not the expected input."));
+            
+            client.developerMode = state;
+            await client.util.setConfig('developerMode', state);
             embed.setDescription(`Developer Mode is now \`${state ? 'ON' : 'OFF'}\`.`)
-            configejf.set(`developerMode`, state);
             client.user.setActivity(`${state ? 'the dev only' : 'everyone'}`, {type: 'LISTENING'});
         };
         message.channel.send(embed);

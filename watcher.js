@@ -11,7 +11,7 @@ module.exports = {
                 watcher.isReady = true;
                 console.log(`Watcher ready\t\t\t(time: ${process.uptime()}s)`);
             })
-            .on('change', filePath => {
+            .on('change', async filePath => {
                 const dirs = filePath.split(sep);
                 const name = [dirs[dirs.length - 2], dirs[dirs.length - 1].replace(/\.[^/.]+$/, "")];
                 delete require.cache[require.resolve('./' + filePath)];
@@ -43,7 +43,7 @@ module.exports = {
                     case 'Events':
                         const event = require('./' + filePath);
                         client.removeAllListeners(name[1]);
-                        client.on(name[1], event.bind(null, client));
+                        client.on(name[1], await event.bind(null, client));
                         console.log(`Updated Event: ${name[1]}`);
                         break;
                     case 'node_modules':
@@ -57,8 +57,6 @@ module.exports = {
                         break;
                     default:
                         console.log(`Updated File: ${filePath}`);
-                        if (name[1] == 'config' && dirs[0] == 'Data')
-                            client.prefix.default = client.util.reloadFile('@data/config.json').defaultPrefix;
                         break;
                 };
             })

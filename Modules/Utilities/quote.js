@@ -23,10 +23,21 @@ module.exports = {
         var quoted = null;
         if (args[0].match(/https:\/\/discord\.com\/channels\/\d+\/\d+\/\d+/)) {
             let subArgs = args[0].split('/').slice(-3);
-            let guild = await client.guilds.fetch(subArgs[0]);
-            if (!guild) return message.reply('cannot access the guild.');
-            let channel = await guild.channels.resolve(subArgs[1]);
-            if (!channel) return message.reply('cannot access the channel.');
+            let guild, channel;
+            try {
+                guild = await client.guilds.fetch(subArgs[0]);
+            } catch (error) {
+                return message.channel.send(embed.setDescription('Cannot access the guild.'));
+            }
+            if (!guild) return message.channel.send(embed.setDescription('Cannot access the guild.'));
+            
+            try {
+                channel = await guild.channels.resolve(subArgs[1]);
+            } catch (error) {
+                return message.channel.send(embed.setDescription('Cannot access the channel.'));
+            }
+            if (!channel) return message.channel.send(embed.setDescription('Cannot access the channel.'));
+            
             quoted = await channel.messages.fetch(subArgs[2]);
         } else {
             await message.channel.messages.fetch(args[0]).then(m => quoted = m).catch(e => {
