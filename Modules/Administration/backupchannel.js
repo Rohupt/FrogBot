@@ -12,13 +12,13 @@ module.exports = {
     name, aliases,
     module: mod,
     channelType: 1, //-1: direct message only, 0: both, 1: guild channel only
-    permission: '',
+    permission: 'moderator',
     userPermissionList: [],
     botPermissionList: [],
     minArguments: 1,
     
-    description: '',
-    usage: `\`<commandname>\``,
+    description: "Back up a channel's chat history",
+    usage: `\`<commandname> <channel>\``,
 
     async execute(client, message, args, joined, embed) {
         let guild, channel;
@@ -88,9 +88,9 @@ module.exports = {
             sheet.addRow({author: message.author.name, content: message.content.replace(new RegExp('\\n', 'g'), '\n'), embeds: embeds, attachments: attachments});
 
         };
-        await workbook.xlsx.writeFile(`Data/Archives/${channel.name}.xlsx`);
+        await workbook.xlsx.writeFile(`./Data/Archives/${channel.name}.xlsx`);
 
-        await message.channel.send([embed.setDescription('Archive completed.'), new Discord.MessageAttachment(`Data/Archives/${channel.name}.xlsx`)]);
-        FS.unlink(`Data/Archives/${channel.name}.xlsx`, err => {if (err) console.error(err)});
+        await message.channel.send([embed.setDescription('Archive completed.'), new Discord.MessageAttachment(`./Data/Archives/${channel.name}.xlsx`)]);
+        FS.unlink(`./Data/Archives/${channel.name}.xlsx`, err => {if (err) console.error(err)});
     },
 };
