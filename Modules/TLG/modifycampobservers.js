@@ -13,7 +13,7 @@ module.exports = {
     permission: 'dungeonmasters',
     userPermissionList: [],
     botPermissionList: ['MANAGE_CHANNELS', 'MANAGE_ROLES'],
-    minArguments: 2,
+    minArguments: 1,
     
     description: 'Add or remove observers of a campaign.\n' +
         'Observers can view the channels and talk in discussion channel, but cannot interfere in the roleplay channel.\n',
@@ -29,20 +29,19 @@ module.exports = {
         var campList = await CampModel.find({});
         
         let camp = null, campVar = true;
-        camp = campList.find(c => c.name.toLowerCase().includes(args[0].toLowerCase()));
-        if (!camp) {
-            camp = campList.find(c => (c.discussChannel == message.channel.id || c.roleplayChannel == message.channel.id));
-            campVar = false;
-        }
+        camp = campList.find(c => (c.discussChannel == message.channel.id || c.roleplayChannel == message.channel.id));
+        if (camp) campVar = false;
+            else camp = campList.find(c => c.name.toLowerCase().includes(args[0].toLowerCase()));
         if (!camp)
             return message.channel.send(embed.setDescription("Please enter the camp name."));
         
+        embed.setTitle(camp.name);
         if (message.author.id != camp.DM && !message.member.roles.cache.some(r => r.id == tlg.modRoleID) && !message.member.hasPermission('ADMINISTRATOR')) {
             embed.setDescription("You are not the Dungeon Master of this camp, nor a moderator.\nYou cannot use this command.");
             return message.channel.send(embed);
         };
         
-        if (campVar && args.length <= 1 || !campVar && args.length <= 2) {
+        if (campVar && args.length <= 1 || !campVar && args.length <= 0) {
             embed.setDescription("Please provide at least some names.");
             return message.channel.send(embed);
         };

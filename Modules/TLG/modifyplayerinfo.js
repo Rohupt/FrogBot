@@ -33,19 +33,18 @@ module.exports = {
         var tlg = client.util.reloadFile('@data/tlg.json');
         var campList = await CampModel.find({});
 
-        let camp = null, player = null, campVar = true;
-        camp = campList.find(c => c.name.toLowerCase().includes(args[0].toLowerCase()));
-        if (!camp) {
-            camp = campList.find(c => (c.discussChannel == message.channel.id || c.roleplayChannel == message.channel.id));
-            campVar = false;
-        }
+        let camp = null, campVar = true;
+        camp = campList.find(c => (c.discussChannel == message.channel.id || c.roleplayChannel == message.channel.id));
+        if (camp) campVar = false;
+            else camp = campList.find(c => c.name.toLowerCase().includes(args[0].toLowerCase()));
         if (!camp)
             return message.channel.send(embed.setDescription("Please enter the camp name."));
-
-        if (message.author.id != camp.DM && !camp.players.find(p => p.id == message.author.id) && !message.member.roles.cache.some(r => r.id == tlg.modRoleID) && !message.member.hasPermission('ADMINISTRATOR')) {
-            return message.channel.send(embed.setDescription("You are not the Dungeon Master or a player of this camp, nor a moderator.\nYou cannot use this command."));
+        
+        if (message.author.id != camp.DM && !message.member.roles.cache.some(r => r.id == tlg.modRoleID) && !message.member.hasPermission('ADMINISTRATOR')) {
+            embed.setDescription("You are not the Dungeon Master of this camp, nor a moderator.\nYou cannot use this command.");
+            return message.channel.send(embed);
         };
-
+        
         if (camp.players.find(p => p.id == message.author.id)) {
             let tempPlayer = campVar ? client.util.user(message.guild, args[1]) : client.util.user(message.guild, args[0]);
             if (tempPlayer && tempPlayer.id != message.author.id && !message.member.roles.cache.some(r => r.id == tlg.modRoleID) && !message.member.hasPermission('ADMINISTRATOR'))
