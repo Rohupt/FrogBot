@@ -33,7 +33,9 @@
     "@types/module-alias": "^2.0.0"
   },
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "herokuon": "heroku ps:scale workers=1 -a frog-bot-tlg",
+    "herokuoff": "heroku ps:scale workers=0 -a frog-bot-tlg"
   },
   "keywords": []
 }
