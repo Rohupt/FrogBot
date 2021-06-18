@@ -31,17 +31,14 @@ module.exports = {
 
     async execute(client, message, args, joined, embed) {
         var tlg = client.util.reloadFile('@data/tlg.json');
-        var campList = await CampModel.find({});
-
-        let camp = null, campVar = true;
-        camp = campList.find(c => (c.discussChannel == message.channel.id || c.roleplayChannel == message.channel.id));
-        if (camp) campVar = false;
-            else camp = campList.find(c => c.name.toLowerCase().includes(args[0].toLowerCase()));
+        
+        let {camp, campVar} = await client.util.findCamp(message, args);
         if (!camp)
             return message.channel.send(embed.setDescription("Please enter the camp name."));
         
-        if (message.author.id != camp.DM && !message.member.roles.cache.some(r => r.id == tlg.modRoleID) && !message.member.hasPermission('ADMINISTRATOR')) {
-            embed.setDescription("You are not the Dungeon Master of this camp, nor a moderator.\nYou cannot use this command.");
+        
+        if (message.author.id != camp.DM && !camp.players.find(p => p.id == message.author.id) && !message.member.roles.cache.some(r => r.id == tlg.modRoleID) && !message.member.hasPermission('ADMINISTRATOR')) {
+            embed.setDescription(`You are not the Dungeon Master or player of this camp (\`${camp.name}\`), nor a moderator.\nYou cannot use this command.`);
             return message.channel.send(embed);
         };
         
@@ -76,7 +73,6 @@ module.exports = {
             else
                 return message.channel.send(embed.setDescription("The link is invalid."));
 
-        console.log(camp);
         await CampModel.updateOne({ _id : camp.id }, { players: camp.players });
         embed.setTitle(camp.name)
             .setDescription("Completed. Please recheck:")

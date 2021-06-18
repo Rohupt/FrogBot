@@ -13,7 +13,7 @@ module.exports = {
     permission: 'moderators',
     userPermissionList: [],
     botPermissionList: ['MANAGE_CHANNELS', 'MANAGE_ROLES'],
-    minArguments: 0,
+    minArguments: 1,
     
     description: 'Delete a camp from database, as well as its role and channels',
     usage: `\`<commandname> <name>\` Delete a campaign named <name>\n` +
@@ -21,15 +21,9 @@ module.exports = {
 
     async execute(client, message, args, joined, embed) {
         var tlg = client.util.reloadFile('@data/tlg.json');
-        var campList = await CampModel.find({});
-        const guild = client.guilds.resolve(tlg.id);
-        
-        const campName = joined;
-        const camp = campList.find(c => c.name.toLowerCase().includes(campName.toLowerCase()));
-        if (!camp) {
-            embed.setDescription('There is no campaign with such name.');
-            return message.channel.send(embed);
-        };
+        let camp = (await client.util.findCamp(message, args)).camp;
+        if (!camp)
+            return message.channel.send(embed.setDescription("Please enter the camp name."));
 
         var cont = false;
         embed.setDescription(`Do you really want to delete the campaign \`${camp.name}\`?\nAnything other than \`Absolutely yes\`will be interpreted as \`no\`.`)

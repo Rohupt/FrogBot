@@ -80,10 +80,7 @@ module.exports = {
             },
         };
         
-        let camp = null, campVar = true;
-        camp = campList.find(c => (c.discussChannel == message.channel.id || c.roleplayChannel == message.channel.id));
-        if (camp) campVar = false;
-            else camp = campList.find(c => c.name.toLowerCase().includes(args[0].toLowerCase()));
+        let {camp, campVar} = await client.util.findCamp(message, args);
         if (!camp)
             return message.channel.send(embed.setDescription("Please enter the camp name."));
         

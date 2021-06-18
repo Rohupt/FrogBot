@@ -20,35 +20,17 @@ module.exports = {
         "`<campaign>` can be omitted if you use this command in the camp's own channels; and `<player>` can be omitted if you update your own links.",
 
     async execute(client, message, args, joined, embed) {
-        var tlg = client.util.reloadFile('@data/tlg.json');
-        var campList = await CampModel.find({});
-
-        let camp = null, campVar = true;
-        camp = campList.find(c => (c.discussChannel == message.channel.id || c.roleplayChannel == message.channel.id));
-        if (camp) campVar = false;
-            else camp = campList.find(c => c.name.toLowerCase().includes(args[0].toLowerCase()));
+        let {camp, campVar} = await client.util.findCamp(message, args);
         if (!camp)
             return message.channel.send(embed.setDescription("Please enter the camp name."));
         
-        embed.setTitle(camp.name);
-        if (message.author.id != camp.DM && !message.member.roles.cache.some(r => r.id == tlg.modRoleID) && !message.member.hasPermission('ADMINISTRATOR')) {
-            embed.setDescription("You are not the Dungeon Master of this camp, nor a moderator.\nYou cannot use this command.");
-            return message.channel.send(embed);
-        };
         
-        if (camp.players.find(p => p.id == message.author.id)) {
-            let tempPlayer = campVar ? client.util.user(message.guild, args[1]) : client.util.user(message.guild, args[0]);
-            if (tempPlayer && tempPlayer.id != message.author.id && !message.member.roles.cache.some(r => r.id == tlg.modRoleID) && !message.member.hasPermission('ADMINISTRATOR'))
-                return message.channel.send(embed.setDescription("You cannot set the links for another player."));
-            player = message.author.id;
-        } else {
-            let tempPlayer = campVar ? client.util.user(message.guild, args[1]) : client.util.user(message.guild, args[0]);
-            if (!tempPlayer)
-                return message.channel.send(embed.setDescription("Please specify a player."));
-            if (!camp.players.find(p => p.id == tempPlayer.id))
-                return message.channel.send(embed.setDescription("That user is not a player of this camp."));
-            player = tempPlayer.id;
-        }
+        let tempPlayer = campVar ? client.util.user(message.guild, args[1]) : client.util.user(message.guild, args[0]);
+        if (!tempPlayer)
+            return message.channel.send(embed.setDescription("Please specify a player."));
+        if (!camp.players.find(p => p.id == tempPlayer.id))
+            return message.channel.send(embed.setDescription("That user is not a player of this camp."));
+        player = tempPlayer.id;
 
         let campPlayer = camp.players.find(p => p.id == player);
         

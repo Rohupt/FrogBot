@@ -13,7 +13,7 @@ module.exports = {
     permission: 'moderators',
     userPermissionList: [],
     botPermissionList: [],
-    minArguments: 1,
+    minArguments: 0,
     
     description: 'Archive a campaign',
     usage: `\`<commandname> <campaign>\`\n` +
@@ -34,13 +34,10 @@ module.exports = {
         var campList = await CampModel.find({});
         var guild = client.guilds.resolve(id);
         
-        const campName = joined;
-        const camp = campList.filter(c => c.name.toLowerCase().includes(campName.toLowerCase()))[0];
-        if (!camp) {
-            embed.setDescription('There is no campaign with such name.');
-            return message.channel.send(embed);
-        };
-
+        let camp = (await client.util.findCamp(message, args)).camp;
+        if (!camp)
+            return message.channel.send(embed.setDescription("Please enter the camp name."));
+        
         var cont = false;
         embed.setDescription(`do you really want to archive the campaign \`${camp.name}\`?\nAnything other than \`Absolutely yes\`will be interpreted as \`no\`.`)
         await message.reply(embed)

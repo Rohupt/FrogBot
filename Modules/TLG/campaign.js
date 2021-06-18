@@ -23,14 +23,14 @@ function filterCampList(campList, client, message, args, joined) {
             return result.filter(camp => (camp.discussChannel == message.channel.id || camp.roleplayChannel == message.channel.id))
         let firstFilterIndex = args.findIndex(arg => arg.startsWith('-'));
         if (firstFilterIndex > 0)
-            result = result.filter(camp => camp.name.toLowerCase().contains(args.slice(firstFilterIndex).join(' ').toLowerCase()));
+            result = result.filter(camp => camp.name.toLowerCase().includes(args.slice(firstFilterIndex).join(' ').toLowerCase()));
         for (let i = firstFilterIndex; i < args.length; i += 2) {
             if (!args[i+1] || args[i+1].match(/^-[mnstp-]/i))
                 continue;
             switch (args[i].toLowerCase()) {
                 case '--name':
                 case '-n':
-                    result = result.filter(camp => camp.name.toLowerCase().contains(args[i+1].toLowerCase()));
+                    result = result.filter(camp => camp.name.toLowerCase().includes(args[i+1].toLowerCase()));
                     break;
                 case '--type':
                 case '-t':
@@ -64,7 +64,7 @@ function filterCampList(campList, client, message, args, joined) {
             }
         }
     } else {
-        result = result.filter(camp => camp.name.toLowerCase().includes(joined.toLowerCase()));
+        result = args.length == 1 ? result.filter(camp => camp.name.toLowerCase().includes(args[0].toLowerCase())) : result.filter(camp => camp.name.toLowerCase().includes(joined.toLowerCase()));
     }
     return result;
 }
@@ -86,8 +86,8 @@ module.exports = {
         'The arguments should be wrapped in double quotes if it contains a space.\n' +
         'You can use the options multiple times, the filters will be stacked (AND filter).\n\n' +
         'If there is more than one page, you can add the option `-p`/`--page` to view a certain page.',
-    example: '<commandname> -t "Finding players" //List all camps which are looking for players\n' +
-        '<commandname> -t Finding //ditto\n' +
+    example: '<commandname> -s "Finding players" //List all camps which are looking for players\n' +
+        '<commandname> -s Finding //ditto\n' +
         '<commandname> Aglio --dm FrogBot',
 
     async execute(client, message, args, joined, embed) {
@@ -97,6 +97,7 @@ module.exports = {
         try {
             result = filterCampList(campList, client, message, args, joined);
         } catch (error) {
+            console.log(error);
             return message.channel.send(embed.setDescription(error));
         }
         
