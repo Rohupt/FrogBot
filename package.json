@@ -34,8 +34,8 @@
   },
   "scripts": {
     "start": "node index.js",
-    "herokuon": "heroku ps:scale workers=1 -a frog-bot-tlg",
-    "herokuoff": "heroku ps:scale workers=0 -a frog-bot-tlg"
+    "herokuon": "heroku ps:scale worker=1 -a frog-bot-tlg",
+    "herokuoff": "heroku ps:scale worker=0 -a frog-bot-tlg"
   },
   "keywords": []
 }
