@@ -46,7 +46,7 @@ module.exports = {
         const aPos = args.indexOf('+'), rPos = args.indexOf('-');
         let addList = [], removeList = [];
         if (aPos == -1 && rPos == -1) {
-            args.slice(campVar ? 1 : 0 + 0).forEach(arg => {
+            args.slice((campVar ? 1 : 0) + 0).forEach(arg => {
                 let mem = client.util.user(message.guild, arg);
                 if (mem) {
                     if (!camp.players.includes(mem.id)) {
@@ -56,13 +56,13 @@ module.exports = {
                 };
             });
         } else if (aPos > -1 && rPos == -1) {
-            args.slice(campVar ? 1 : 0 + 1).forEach(arg => {
+            args.slice(aPos + 1).forEach(arg => {
                 let mem = client.util.user(message.guild, arg);
                 if (mem && !camp.players.includes(mem.id))
                     addList.push(mem);
             });
         } else if (aPos == -1 && rPos > -1) {
-            args.slice(campVar ? 1 : 0 + 1).forEach(arg => {
+            args.slice(rPos + 1).forEach(arg => {
                 let mem = client.util.user(message.guild, arg);
                 if (mem && !camp.players.includes(mem.id))
                     removeList.push(mem);
