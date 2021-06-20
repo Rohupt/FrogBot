@@ -10,32 +10,68 @@ function getArgs(message) {
     while (message.indexOf(tabMarker) > -1) tabMarker += '@';
 
     // Replace double double quotes with markers
-    const ddqReplaced = message.replace( /""/g, doubleDoubleQuote);
+    const ddqReplaced = message
+        .replace( /(?<=")""(?=")/g, doubleDoubleQuote)
+        .replace( /(?<=[ \n\t])"""(?=[ \n\t])/g, doubleDoubleQuote + '"' + doubleDoubleQuote)
+        .replace( /(?<=[ \n\t])"""/g, '"' + doubleDoubleQuote)
+        .replace( /"""(?=[ \n\t])/g, doubleDoubleQuote + '"')
+        .replace( /""/g, doubleDoubleQuote);
     // Replace spaces, tabs, newlines in double-quoted args with markers; and ddq markers with single dq
-    const whitespacesReplaced = ddqReplaced.replace(/"([^"]*)"?/g, (fullMatch, capture) => {
-        return capture
-            .replace(/ /g, spaceMarker)
-            .replace(/\t/g, tabMarker)
-            .replace(/\n/g, newLineMarker)
+    const wsReplaced = ddqReplaced.replace(/"([^"]*)"?/g, (fullMatch, capture) => {
+        return capture.replace(/ /g, spaceMarker).replace(/\t/g, tabMarker).replace(/\n/g, newLineMarker)
             .replace(RegExp(doubleDoubleQuote, 'g'), '"');
     });
     // Split the arguments
-    const mangledParams = whitespacesReplaced.trim().split(/[ \n\t]+/);
+    const argsSplit = wsReplaced.trim().split(/[ \n\t]+/);
     // Change the markers back to whitespaces; remove any ddq left
-    return mangledParams.map((mangledParam) => {
+    const args = argsSplit.map((mangledParam) => {
         return mangledParam
-            .replace(RegExp(spaceMarker, 'g'), ' ')
-            .replace(RegExp(tabMarker, 'g'), '\t')
-            .replace(RegExp(newLineMarker, 'g'), '\n')
+            .replace(RegExp(spaceMarker, 'g'), ' ').replace(RegExp(tabMarker, 'g'), '\t').replace(RegExp(newLineMarker, 'g'), '\n')
             .replace(RegExp(doubleDoubleQuote, 'g'), '');
     });
+
+    // Additional part for joining purpose
+    //#region Addition
+    const originalwsReplaced = ddqReplaced.replace(/"([^"]*)"?/g, (fullMatch, capture) => {
+        return fullMatch.replace(/ /g, spaceMarker).replace(/\t/g, tabMarker).replace(/\n/g, newLineMarker)
+            .replace(RegExp(doubleDoubleQuote, 'g'), '""');
+    });
+    
+    const originalSplit = originalwsReplaced.trim().split(/[ \n\t]+/);
+    
+    const originalParams = originalSplit.map((mangledParam) => {
+        return mangledParam
+            .replace(RegExp(spaceMarker, 'g'), ' ').replace(RegExp(tabMarker, 'g'), '\t').replace(RegExp(newLineMarker, 'g'), '\n')
+            .replace(RegExp(doubleDoubleQuote + '"""', 'g'), '"""')
+            .replace(RegExp('"""' + doubleDoubleQuote, 'g'), '"""')
+            .replace(RegExp(doubleDoubleQuote, 'g'), '""');
+    });
+
+    args.indexes = [], currentIndex = 0;
+    for (let i = 1; i < originalSplit.length; i++) {
+        let temp = message.slice(currentIndex + (i == 0 ? 0 : originalParams[i-1].length));
+        currentIndex += temp.indexOf(originalParams[i]) + (i == 0 ? 0 : originalParams[i-1].length);
+        args.indexes.push(currentIndex);
+    };
+
+    args.joinArgs = (startIndex = 0, endIndex = args.length) => {
+        endIndex = (endIndex === undefined || endIndex > args.length) ? args.length : endIndex;
+        startIndex += startIndex < 0 ? args.length : 0;
+        endIndex += endIndex < 0 ? args.length : 0;
+        
+        if (endIndex < startIndex || startIndex >= args.length) return "";
+        return message.slice(args.indexes[startIndex], args.indexes[endIndex - 1] + originalParams[endIndex - 1].length);
+    };
+    //#endregion Addition
+
+    return args;
 }
 
 function getCommandAndArgs(client, message, prefix) {
     const actualPrefix = message.content.startsWith(prefix) ? prefix : `<@!${client.user.id}>`;
     const args = getArgs(message.content.slice(actualPrefix.length));
     const commandName = args.shift();
-    const joined = message.content.replace(RegExp(actualPrefix + /[ \n\t]*/.source + commandName + /[ \n\t]*/.source, 'i'), '');
+    const joined = args.joinArgs();
     const command = client.commands.get(client.calls.get(commandName.toLowerCase()));
     return {command, args, joined};
 }
@@ -46,7 +82,7 @@ function commandLog(message, command, args, joined) {
         + `Guild\t\t: ${isDM ? 'None' : message.guild.name}${!isDM ? ' (' + message.guild.id + ')' : ''}\n`
         + `Channel\t\t: ${isDM ? 'Direct Message' : message.channel.name} (${message.channel.id})\n`
         + `Caller\t\t: ${message.author.tag} (${message.author.id})\n`
-        + `Time\t\t: ${message.createdAt.toString()}\n`
+        + `Time\t\t: ${message.createdAt.toLocaleString('vi-VN', {timeZone: 'Asia/Ho_Chi_Minh'})}\n`
         + `Arguments\t: [${args.map(arg => arg.replace('\n', '\\n').replace('\t', '\\t')).join(', ')}]\n`
         + `Joined Args\t: {${joined}}\n`);
 }

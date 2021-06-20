@@ -44,20 +44,20 @@ module.exports = {
         const aPos = args.indexOf('+'), rPos = args.indexOf('-');
         let addList = [], removeList = [];
         if (aPos == -1 && rPos == -1) {
-            args.slice(campVar ? 1 : 0 + 0).forEach(arg => {
+            args.slice((campVar ? 1 : 0) + 0).forEach(arg => {
                 let mem = client.util.user(message.guild, arg)
                 if (mem)
                     if (camp.players.find(p => p.id == mem.id)) removeList.push(mem);
                     else addList.push(mem);
             });
         } else if (aPos > -1 && rPos == -1) {
-            args.slice(campVar ? 1 : 0 + 1).forEach(arg => {
+            args.slice((campVar ? 1 : 0) + 1).forEach(arg => {
                 let mem = client.util.user(message.guild, arg)
                 if (mem && !camp.players.find(p => p.id == mem.id))
                     addList.push(mem);
             });
         } else if (aPos == -1 && rPos > -1) {
-            args.slice(campVar ? 1 : 0 + 1).forEach(arg => {
+            args.slice((campVar ? 1 : 0) + 1).forEach(arg => {
                 let mem = client.util.user(message.guild, arg)
                 if (mem && camp.players.find(p => p.id == mem.id))
                     removeList.push(mem);
@@ -90,14 +90,14 @@ module.exports = {
 
         const campRoleMaxPos = guild.roles.resolve(tlg.noCampRoleID).position,
             campRoleMinPos = guild.roles.resolve(tlg.advLeagueRoleCatID).position;
-        for (mem of removeList) {
+        for await (mem of removeList) {
             await mem.roles.remove(camp.role);
             if (!mem.roles.cache.some(r => (r.position > campRoleMinPos && r.position < campRoleMaxPos)))
                 await mem.roles.add(tlg.noCampRoleID);
             if (camp.players.filter(p => p.id == mem.id))
                 camp.players.splice(camp.players.findIndex(p => p.id == mem.id), 1);
         };
-        for (mem of addList) {
+        for await (mem of addList) {
             await mem.roles.add(camp.role);
             await mem.roles.remove(tlg.noCampRoleID);
             if (!camp.players.find(p => p.id == mem.id))
