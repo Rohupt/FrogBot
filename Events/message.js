@@ -60,7 +60,7 @@ function getArgs(message) {
         endIndex += endIndex < 0 ? args.length : 0;
         
         if (endIndex < startIndex || startIndex >= args.length) return "";
-        return message.slice(args.indexes[startIndex], args.indexes[endIndex - 1] + originalParams[endIndex - 1].length);
+        return message.slice(args.indexes[startIndex], args.indexes[endIndex - 1] + originalParams[endIndex].length);
     };
     //#endregion Addition
 
