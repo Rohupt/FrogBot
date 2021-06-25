@@ -79,6 +79,7 @@ module.exports = {
                 await player.roles.add(noCampRoleID);
         };
         
-        message.channel.send(embed.setDescription("campaign archived."));
+        let reportChannel = message.channel || message.author.dmChannel;
+        await reportChannel.send(embed.setDescription("Campaign archived."));
     },
 };

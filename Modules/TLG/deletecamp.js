@@ -60,6 +60,7 @@ module.exports = {
                 await player.roles.add(tlg.noCampRoleID);
         };
         await CampModel.deleteOne({ _id: camp.id });
-        message.reply(embed.setDescription("Campaign deleted."));
+        let reportChannel = message.channel || message.author.dmChannel;
+        await reportChannel.send(embed.setDescription("Campaign deleted."));
     },
 };
