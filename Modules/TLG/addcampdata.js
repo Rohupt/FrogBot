@@ -124,7 +124,7 @@ module.exports = {
     botPermissionList: [],
     minArguments: 10,
     
-    description: 'Register an existing camp to the database.',
+    description: 'Register an existing campaign to the database.',
     usage: "`<commandname> [...<field> <value>]`\n\n" +
         "The options are:\n`--name`/`-n` ⚠\n`--type`/`-t`\n`--state`/`-s`\n`--dungeonmaster`/`--dm`/`-m` ⚠\n`--roleplaychannel`/`--rc`/`-p` ⚠\n" +
         "`--discussionchannel`/`--dc`/`-c` ⚠\n`--role`/`-r` ⚠\n`--description`/`--desc`/`-d`\n`--notes`/`--note`/`-o`.\n\n" +

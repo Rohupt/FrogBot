@@ -16,7 +16,7 @@ module.exports = {
     botPermissionList: ['MANAGE_CHANNELS', 'MANAGE_ROLES'],
     minArguments: 0,
     
-    description: 'Create a test camp.',
+    description: 'Create a test campaign.',
     usage: `\`<commandname>\` Create a full camp\n` +
         `\`<commandname> os\` Create an oneshot\n`,
 

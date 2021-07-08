@@ -15,7 +15,7 @@ module.exports = {
     botPermissionList: [],
     minArguments: 0,
     
-    description: 'Delete a camp from database. It doesn\'t affect the channels and role.' ,
+    description: 'Delete a campaign from database. It doesn\'t affect the channels and role.' ,
     usage: `\`<commandname> <name>\` Delete a campaign named <name>\n` +
         'The name should be wrapped in double quotes if it contains a space.',
 

@@ -240,7 +240,7 @@ module.exports = {
     botPermissionList: ['MANAGE_CHANNELS', 'MANAGE_ROLES'],
     minArguments: 0,
     
-    description: 'Create a new camp.',
+    description: 'Create a new campaign.',
     usage: `\`<commandname>\` Create a campaign, step by step.\n` +
         "You will follow the instructions, enter the camp's name, type (oneshot or not), DM, descriptions and notes. " +
         "Timeout period is 120 sec per step, so please be quick.\n\n" +
@@ -297,7 +297,7 @@ module.exports = {
             },
         };
         
-        embed.setTitle("New camp creation")
+        embed.setTitle("New campaign creation")
             .addField("Type", `None`, true)
             .addField("State", "Creating", true)
             .addField("DM", `Not set yet`, true)

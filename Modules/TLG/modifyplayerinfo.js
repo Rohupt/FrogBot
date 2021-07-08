@@ -25,7 +25,7 @@ module.exports = {
     botPermissionList: [],
     minArguments: 2,
     
-    description: 'Update the camp player\'s links to the character sheet and token.',
+    description: 'Update the player\'s links to the character sheet and token.',
     usage: `\`<commandname> (<campaign>) (<player>) (-sheet <sheetlink>) (-token <tokenlink>)\`\n\n` +
         "`<campaign>` can be omitted if you use this command in the camp's own channels; and `<player>` can be omitted if you update your own links.",
 

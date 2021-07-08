@@ -35,19 +35,25 @@ module.exports = {
     description: 'Display command info and usage.',
     usage: 
         `\`<commandname>\` Display command list\n` +
+        `\`<commandname> <module>\` Display module's command list\n` +
         `\`<commandname> <command>\` Display command info\n`,
 
     async execute(client, message, args, joined, embed) {
         let prefix = await client.util.commandPrefix(client, message);
+        let modules = [];
+        client.commands.forEach(command => {
+            if (!modules.find(f => f.name === command.module))
+                modules.push({name: command.module, value: ""});
+            let field = modules.find(f => f.name === command.module);
+            field.value += `• \`${command.name}\` – ${command.description.split(/\.(?=[ \n\t]|$)/).shift()}.\n`;
+        });
+        modules.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
+        
         if (args.length == 0) {
             embed.setTitle('Command list')
                 .setDescription(`Here are all the commands of the bot. You can use the prefix \`${prefix}\` or ping the bot to use a command.`);
-            client.commands.forEach(command => {
-                if (!embed.fields.find(f => f.name === command.module))
-                    embed.addField(command.module, '\u200b');
-                embed.fields.find(f => f.name === command.module).value += `\`${command.name}\` – ${command.description.split(/\.(?=[ \n\t]|$)/).shift()}.\n`;
-            });
-            embed.fields.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
+            modules.forEach(m => embed.addField(m.name, m.value.length <= 1024
+                ? m.value : `*Command list too long, please use \`${prefix}${name} ${m.name}\` to get the full list.*`));
         } else {
             const command = client.commands.get(client.calls.get(args[0].toLowerCase()));
             if (command) {
@@ -69,11 +75,15 @@ module.exports = {
                     let displayExample = replaceAll(command.example, ReplaceMap);
                     embed.addField('Example', `\`\`\`${displayExample}\`\`\``);
                 }
+            } else if (modules.map(m => m.name.toLowerCase()).includes(args[0].toLowerCase())) {
+                let m = modules.find(m => m.name.toLowerCase() === args[0].toLowerCase());
+                embed.setTitle(`Command list: Module \`${m.name}\``)
+                    .setDescription(`Here are all the commands of the module. You can use the prefix \`${prefix}\` or ping the bot to use a command.\n\n${m.value}`);
             } else {
                 embed.setDescription('There is no such command or alias.');
             }
         }
 
-        message.channel.send(embed);
+        message.channel.send({embed, split: {char: '\n'}});
     },
 };
