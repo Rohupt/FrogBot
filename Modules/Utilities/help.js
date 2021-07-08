@@ -45,7 +45,7 @@ module.exports = {
             client.commands.forEach(command => {
                 if (!embed.fields.find(f => f.name === command.module))
                     embed.addField(command.module, '\u200b');
-                embed.fields.find(f => f.name === command.module).value += `\`${command.name}\` – ${command.description}\n`;
+                embed.fields.find(f => f.name === command.module).value += `\`${command.name}\` – ${command.description.split(/\.(?=[ \n\t]|$)/).shift()}.\n`;
             });
             embed.fields.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
         } else {

@@ -13,7 +13,7 @@ module.exports = {
     botPermissionList: [],
     minArguments: 0,
     
-    description: 'Get the invite link of the bot',
+    description: 'Get the invite link of the bot.',
     usage: `\`<commandname>\``,
 
     async execute(client, message, args, joined, embed) {

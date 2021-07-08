@@ -12,7 +12,7 @@ module.exports = {
     botPermissionList: ['MANAGE_CHANNELS', 'MANAGE_ROLES'],
     minArguments: 2,
     
-    description: 'Move a channel',
+    description: 'Move a channel.',
     usage: '`<commandname> <channel> <position>`',
 
     execute(client, message, args) {

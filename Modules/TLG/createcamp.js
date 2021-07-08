@@ -159,6 +159,7 @@ async function createCamp(client, message, embed, guild) {
     if (newCamp.notes) embed.addField("Notes", newCamp.notes);
     //#endregion Notes
 
+    infoMsg.delete();
     return newCamp;
 }
 

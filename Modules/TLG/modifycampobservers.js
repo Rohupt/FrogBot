@@ -16,7 +16,7 @@ module.exports = {
     minArguments: 1,
     
     description: 'Add or remove observers of a campaign.\n' +
-        'Observers can view the channels and talk in discussion channel, but cannot interfere in the roleplay channel.\n',
+        'Observers can view the channels and talk in discussion channel, but cannot interfere in the roleplay channel.',
     usage: `\`<commandname> (<campaign>) + <addlist> - <removelist>\`\n` +
         "Names should be wrapped in double quotes if contains a space.\n" +
         "`<campaign>` can be omitted if you use this command in the campaign's own channels.\n" +

@@ -15,7 +15,7 @@ module.exports = {
     botPermissionList: [],
     minArguments: 0,
     
-    description: 'Archive a campaign',
+    description: 'Archive a campaign.',
     usage: `\`<commandname> <campaign>\`\n` +
         "The campaign name should be wrapped in double quotes if contains a space.",
 

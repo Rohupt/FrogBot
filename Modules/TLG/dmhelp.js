@@ -13,7 +13,7 @@ module.exports = {
     botPermissionList: [],
     minArguments: 0,
     
-    description: "Show the help for DMs",
+    description: "Show the help for DMs.",
     usage: `\`<commandname>\``,
 
     async execute(client, message, args, joined, embed) {

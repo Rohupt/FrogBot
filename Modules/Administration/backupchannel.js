@@ -18,7 +18,7 @@ module.exports = {
     botPermissionList: [],
     minArguments: 1,
     
-    description: "Back up a channel's chat history",
+    description: "Back up a channel's chat history.",
     usage: `\`<commandname> <channel>\``,
 
     async execute(client, message, args, joined, embed) {

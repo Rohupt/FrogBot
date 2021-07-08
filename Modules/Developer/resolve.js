@@ -8,12 +8,12 @@ module.exports = {
     name, aliases,
     module: mod,
     channelType: 0, //-1: direct message only, 0: both, 1: guild channel only
-    permission: '',
+    permission: 'everyone',
     userPermissionList: [],
     botPermissionList: [],
     minArguments: 1,
     
-    description: '',
+    description: 'Resolve a user, channel or role within the server.',
     usage: `\`<commandname>\``,
 
     async execute(client, message, args, joined, embed) {
