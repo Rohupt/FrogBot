@@ -1,0 +1,77 @@
+{
+    "rules": {
+        "description": "Dưới đây là nội quy cơ bản của server Thần Long Giáo. Chi tiết về tổ chức và cách hoạt động của server có tại <#564383464502067201>.",
+        "rules": [
+            {
+                "name": "1. Hãy lịch sự",
+                "text": "Hãy cư xử đúng mực, tôn trọng người khác cũng như tôn trọng trò chơi. Không được gây gổ, kích động thù hằn, chia rẽ, thể hiện phân biệt đối xử hay gây tổn thương người khác dưới bất kì hình thức nào. Đặc biệt, không sử dụng các từ ngữ thô tục, chửi thề, hay các loại từ ngữ khác có thể khiến người khác khó chịu.\nNgoài ra, tên, biệt danh và hình đại diện của bạn cũng phải đáp ứng được các yêu cầu này. BQT có quyền yêu cầu bạn đổi tên và hình đại diện nếu thấy cần."
+            },
+            {
+                "name": "2. Sử dụng kênh đúng mục đích",
+                "text": "Server có rất nhiều khu vực và kênh, phục vụ cho nhiều mục đích và chủ đề khác nhau. Nếu hội thoại sa đà vào một chủ đề đã có kênh riêng, xin hãy dời sang kênh tương ứng. Nội dung NSFW chỉ được hiển thị trong kênh dành riêng cho nó."
+            },
+            {
+                "name": "3. Không spam không đúng chỗ",
+                "text": "Server có một số khu vực nhất định cho phép người dùng spam và sử dụng lệnh bot (chủ yếu là tại <#559872809967419402>, các chỗ khác tuỳ thuộc vào người quản lí tương ứng). Ngoài các khu vực này, yêu cầu người dùng hạn chế các hành động như thế."
+            },
+            {
+                "name": "4. Tuyên truyền và quảng cáo",
+                "text": "Server không dùng để phục vụ cho việc tuyên truyền các quan điểm chính trị, tôn giáo,v.v., dù vẫn cho phép thảo luận về các chủ đề này. Tuy nhiên, hãy giữ thái độ lịch sự khi thảo luận. Hãy dừng lại nếu thấy vấn đề trở nên nghiêm trọng.\nNếu bạn muốn quảng cáo với mục đích cá nhân, hãy liên hệ ban quản trị server."
+            },
+            {
+                "name": "5. Không lạm dụng việc ping Thần Long Sứ và Pháp Quan",
+                "text": "Ban quản trị sẵn sàng giúp đỡ bạn nếu bạn thực sự có nhu cầu, nhưng hãy hạn chế việc ping nếu không cảm thấy cần thiết. Bạn có thể dùng <#680761749044985856> để gửi đề xuất hoặc đối chất công khai với BQT, hoặc mở ticket (chi tiết tại <#813047957028208670>) để khiếu nại kín, mà không cần ping.\nNếu bạn lỡ tay ping nhầm (kể cả với bất kì ai khác trong server), vui lòng không xoá, để tránh hiện tượng \"ping ma\"."
+            },
+            {
+                "name": "6. Về việc sử dụng bot",
+                "text": "Hãy tuân thủ các quy định tại <#813047957028208670>."
+            },
+            {
+                "name": "7. Trong khi chơi hoặc quan sát trò chơi",
+                "text": "Hãy giữ thái độ bình tĩnh và thoải mái, tránh gây ức chế cho DM và người cùng chơi. Nếu bạn là người quan sát, hãy hạn chế việc can thiệp vào trò chơi."
+            },
+            {
+                "name": "8. Quyền quyết định thuộc về ban quản trị",
+                "text": "Bộ quy tắc này chỉ đưa ra các hướng dẫn chung nhất cho các tình huống có thể phát sinh trong server. Trong mọi trường hợp cụ thể, Thần Long Sứ (và phần nào đó là Pháp Quan) sẽ giữ quyền đưa ra quyết định cuối cùng, và quyết định này phải được tôn trọng."
+            }
+        ]
+    },
+    "faqs": [
+        {
+            "name": "1. Thần Long Giáo có phải là một giáo phái không?",
+            "text": "Không. Đây chỉ là một cái tên lấy từ Tyranny of Dragons để làm \"chủ đề\" (theme) cho server - nên nhớ rằng đây là một server D&D. Chúng tôi không tôn thờ bất kì thứ gì. Ta cũng hay nói \"tín đồ túc cầu giáo\", nhưng đâu có nghĩa bóng đá là tôn giáo thật, đúng không?\nNhưng xin bạn hãy cẩn thận khi giới thiệu cho người thân và bạn bè, *\"Tôi đang gia nhập một hội gọi là Thần Long Giáo\"*... Chúng tôi xin từ chối trách nhiệm với mọi hậu quả của những lời giới thiệu như thế gây ra cho bạn và những người xung quanh."
+        },
+        {
+            "name": "2. Tại sao tên các kênh trong server đều sử dụng  từ Hán Việt?",
+            "text": "Đây là sở thích của những người sáng lập server, và cũng để phù hợp với \"chủ đề\" đã nói trên. Các tên kênh này đã trở thành một phần đặc trưng của server, nên dù không ít lần có đề xuất sửa lại cho quen tai người Việt hơn, chúng tôi vẫn quyết định giữ lại những cái tên này."
+        },
+        {
+            "name": "3. Tại sao tôi chỉ nhìn thấy ba kênh?",
+            "text": "Những người mới vào server sẽ bị \"chặn lại\" ở \"cổng\" với những thông tin tối thiểu dành cho người mới đến. Bạn phải trả lời một số câu hỏi (gọi là \"thủ tục nhập cảnh\") để truy cập vào phần còn lại của server.\n<#559829693956882477> là kênh cho phép bạn tương tác với bộ phận tiếp đón người mới của server, những người ở đó sẽ giúp đỡ bạn những bước đầu tiên để làm quen và hoà nhập với nơi đây."
+        },
+        {
+            "name": "4. Tôi có thể xem thông tin các campaign (camp) đang chạy hoặc đang tuyển người ở đâu?",
+            "text": "<#865972372586496090> là nơi đăng thông tin các campaign đã hoặc đang tồn tại trong server. Hoặc bạn có thể dùng lệnh bot:\n`;camp -s Finding` để tìm camp đang tuyển người;\n`;camp -s Running` để xem danh sách các camp đang chạy;\n`;camp \"Tên camp\"` để xem chi tiết một camp cụ thể (tên camp không cần đầy đủ, nhưng nhớ đóng ngoặc kép nếu cụm từ bạn tìm có dấu cách);..."
+        },
+        {
+            "name": "5. Đăng kí tham gia hoặc quan sát campaign như thế nào?",
+            "text": "Sau khi bạn tìm được camp muốn tham gia hoặc quan sát, hãy liên hệ với DM của camp đó (thông tin liên hệ của DM có trong thông tin camp) để được thêm vào làm người chơi hoặc người quan sát."
+        },
+        {
+            "name": "6. Tôi muốn mở camp trong server",
+            "text": "Bạn hãy liên hệ Pháp Quan trở lên, và cung cấp các thông tin sau đây:\n- Tên camp\n- Loại camp (oneshot hay camp dài)\n- Sơ lược nội dung camp\n- Ghi chú của DM về level, hạn chế luật, quy định khác trong camp,...\nBQT sẽ mở camp cho bạn, với điều kiện bạn là DM của camp đó. Sau khi camp được mở, hãy nhớ đọc <#813047957028208670> để biết các lệnh bot liên quan đến tổ chức camp."
+        },
+        {
+            "name": "7. Camp của tôi không phải là D&D, có được không?",
+            "text": "Được. Bạn có thể mở camp cho bất cứ hệ thống nào (Pathfinder, M&M,...)."
+        },
+        {
+            "name": "8. Tôi có đề xuất cải thiện server",
+            "text": "Bạn có thể đăng lên <#680761749044985856>, hoặc mở ticket nếu cần sự kín đáo.\n- Nếu là emoji hoặc sticker, các Phú Long (Nitro Booster) sẽ thêm vào cho bạn nếu thấy thích và server còn đủ chỗ;\n- Nếu là đề xuất mở hội quán, BQT sẽ mở cho bạn nếu bạn kiếm được đủ phiếu (thường là 10) từ các thành viên khác trong server;\n- Các đề xuất khác (về bot, cách vận hành server, huân huy chương,...), BQT sẽ quyết định đồng ý hay từ chối, với lí do cụ thể."
+        },
+        {
+            "name": "9. Tôi bị mute oan và muốn khiếu nại",
+            "text": "<#634957338796883978> là nơi để những người bị mute có thể khiếu nại với BQT về hình phạt của mình. Hãy dùng ngôn ngữ lịch sự, BQT sẽ giải quyết thoả đáng cho bạn."
+        }
+    ]
+}

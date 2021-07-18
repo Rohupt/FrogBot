@@ -17,6 +17,7 @@ const MessageToDM = "You will take control of your campaign from here. Below are
     "`modifycampinfo`/`mci` Modify details like status and description of the campaign\n" +
     "`modifyplayerinfo`/`mpi` Modify character sheet and token link\n\n" +
     "Please remember to set your camp's status to `1`/`\"Finding players\"`, `2`/`\"Waiting for start\"`, `3`/`Running` or `4`/`Paused` (DO include the double quotes) when necessary.\n\n" +
+    "For more commands please see [here](https://discord.com/channels/559816640133595137/635118914048753674/636077633939177482).\n\n" +
     "**Have fun with your game! NAT 20!**";
 
 async function createCamp(client, message, embed, guild) {

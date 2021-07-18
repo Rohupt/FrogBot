@@ -28,6 +28,7 @@ module.exports = {
             "`help` is useful to view how to use a certain command.\n\n" +
             "(†) Observers are not players, but can watch the camp. Observers can talk in discussion channels, but not roleplay channels.\n\n" +
             "Please remember to set your camp's status to `1`/`\"Finding players\"`, `2`/`\"Waiting for start\"`, `3`/`Running` or `4`/`Paused` (DO include the double quotes) when necessary.\n\n" +
+            "For more commands please see [here](https://discord.com/channels/559816640133595137/635118914048753674/636077633939177482).\n\n" +
             "**Have fun with your game! NAT 20!**"
         ));
     },

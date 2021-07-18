@@ -4,7 +4,6 @@ const name = __filename.split(sep)[__filename.split(sep).length - 1].replace(/\.
 const mod = __dirname.split(sep)[__dirname.split(sep).length - 1];
 const aliases = ['sp'];
 
-const ejf = require('edit-json-file');
 const ServerModel = require('@data/Schema/server-schema.js');
 
 module.exports = {

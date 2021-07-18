@@ -46,8 +46,6 @@ module.exports = {
                         client.on(name[1], await event.bind(null, client));
                         console.log(`Updated Event: ${name[1]}`);
                         break;
-                    case 'node_modules':
-                        break;
                     case 'Utilities':
                         if (name[1] == 'utilities') {
                             delete require.cache[require.resolve('./' + filePath)];
@@ -55,6 +53,12 @@ module.exports = {
                             console.log('Updated utilities');
                         }
                         break;
+                    case 'Data':
+                        if (name[1] == 'constants') {
+                            delete require.cache[require.resolve('./' + filePath)];
+                            client.util = require('./Data/constants.json');
+                            console.log('Updated constants');
+                        }
                     default:
                         console.log(`Updated File: ${filePath}`);
                         break;

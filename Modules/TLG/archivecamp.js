@@ -49,7 +49,12 @@ module.exports = {
                     });
             });
         if (!cont)
-            return message.channel.send(embed.setDescription("Campaign deletion cancelled."));
+            return message.channel.send(embed.setDescription("Campaign archiving cancelled."));
+
+        if (client.util.channel(message.guild, archiveCat).children.size >= client.constants.MAX_CHANNELS_PER_CATEGORY) {
+            let prefix = await client.util.commandPrefix(client, message);
+            return message.channel.send(embed.setDescription(`Archive category full. Please change to another category (using \`${prefix}ac\`) before continuing.`));
+        }
         
         const newPos = pos.archive() + 1;
         campList.splice(campList.indexOf(camp), 1);
