@@ -42,7 +42,7 @@
             "text": "Không. Đây chỉ là một cái tên lấy từ Tyranny of Dragons để làm \"chủ đề\" (theme) cho server - nên nhớ rằng đây là một server D&D. Chúng tôi không tôn thờ bất kì thứ gì. Ta cũng hay nói \"tín đồ túc cầu giáo\", nhưng đâu có nghĩa bóng đá là tôn giáo thật, đúng không?\nNhưng xin bạn hãy cẩn thận khi giới thiệu cho người thân và bạn bè, *\"Tôi đang gia nhập một hội gọi là Thần Long Giáo\"*... Chúng tôi xin từ chối trách nhiệm với mọi hậu quả của những lời giới thiệu như thế gây ra cho bạn và những người xung quanh."
         },
         {
-            "name": "2. Tại sao tên các kênh trong server đều sử dụng  từ Hán Việt?",
+            "name": "2. Tại sao tên các kênh trong server đều sử dụng từ Hán Việt?",
             "text": "Đây là sở thích của những người sáng lập server, và cũng để phù hợp với \"chủ đề\" đã nói trên. Các tên kênh này đã trở thành một phần đặc trưng của server, nên dù không ít lần có đề xuất sửa lại cho quen tai người Việt hơn, chúng tôi vẫn quyết định giữ lại những cái tên này."
         },
         {
@@ -72,6 +72,10 @@
         {
             "name": "9. Tôi bị mute oan và muốn khiếu nại",
             "text": "<#634957338796883978> là nơi để những người bị mute có thể khiếu nại với BQT về hình phạt của mình. Hãy dùng ngôn ngữ lịch sự, BQT sẽ giải quyết thoả đáng cho bạn."
+        },
+        {
+            "name": "10. Tôi muốn đăng kí dịch vụ DnDBeyond của server",
+            "text": "Bạn hãy qua <#680761749044985856> và dùng lệnh `;beyond <số tháng>` để đăng kí."
         }
     ]
 }
