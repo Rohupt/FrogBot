@@ -24,12 +24,17 @@ module.exports = {
             .setFooter("Thần Long Giáo - Cộng đồng D&D Việt Nam trên Discord", message.guild.iconURL());
         const faqEmbed = new Discord.MessageEmbed().setColor('#57f287').setTitle('FAQ - CÂU HỎI THƯỜNG GẶP')
             .setFooter("Thần Long Giáo - Cộng đồng D&D Việt Nam trên Discord", message.guild.iconURL());
+        const formsEmbed = new Discord.MessageEmbed().setColor('#57f287')
+            .setFooter("Thần Long Giáo - Cộng đồng D&D Việt Nam trên Discord", message.guild.iconURL())
+            .setDescription("Bạn có thể đóng góp câu hỏi để bổ sung vào mục FAQ bên trên tại đây: https://forms.gle/Wa61s9yPs8DZrG6L9\n\n" +
+                "Đánh giá chất lượng Tiếp tân: https://forms.gle/oxR2P9iCKJUUE9Hi6");
 
         rulesAndFAQs.rules.rules.forEach(rule => ruleEmbed.addField(rule.name, rule.text + "\n\u200b"));
         rulesAndFAQs.faqs.forEach(q => faqEmbed.addField(q.name, q.text+ "\n\u200b"));
 
         await message.channel.send(ruleEmbed);
         await message.channel.send(faqEmbed);
+        await message.channel.send(formsEmbed);
         await message.delete();
     },
 };

@@ -39,7 +39,7 @@ module.exports = {
         let messageToAdmins = `<@!${message.author.id}> registered for **${subsTime}** of DnDBeyond subscription.`;
         let messageToUser = `The subscription admins are informed.\n` +
             `Now please transfer **VND ${price}** to the account written in <#564383464502067201> ` +
-            `and send the receipt screenshot to one of the members with <@&676089704571207690> role to complete registering.\n\n` +
+            `and send the receipt screenshot to <@!499587089038442536> (in direct messages) to complete registering.\n\n` +
             `${message.member.roles.cache.find(r => r.id == '634967372976881664') ? 'You have 10% discount due to having the <@&634967372976881664> role.\n' : ''}` +
             `Any ${message.member.roles.cache.find(r => r.id == '634967372976881664') ? 'other ' : ''}discounts will be informed to you by the subscription admins.`;
         await beyondChannel.send(embed.setDescription(messageToAdmins));
