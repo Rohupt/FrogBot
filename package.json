@@ -4,6 +4,9 @@
   "description": "My own Discord bot template",
   "main": "index.js",
   "author": "Rohupt",
+  "engines": {
+    "node": "^16.6.x"
+  },
   "dependencies": {
     "chokidar": "^3.4.2",
     "discord-fetch-all": "^3.0.2",
