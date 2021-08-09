@@ -19,7 +19,7 @@ module.exports = {
     async execute(client, message, args, joined, embed) {
         message.channel.send({embeds: [embed.setDescription(`Pong! 🏓`)]}).then((resultMessage) => {
             embed.setDescription(`Pong! 🏓\nBot latency \`${resultMessage.createdTimestamp - message.createdTimestamp}\` ms, API latency: \`${client.ws.ping}\` ms.`);
-            resultMessage.edit(embed);
+            resultMessage.edit({embeds: [embed]});
         });
     },
 };
