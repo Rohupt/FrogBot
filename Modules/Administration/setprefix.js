@@ -22,7 +22,7 @@ module.exports = {
         const isDM = message.channel.type == 'dm';
         
         if (isDM)
-            return (message.channel.send(embed.setDescription('You cannot change the prefix in direct message channel.')));
+            return (message.channel.send({embeds: [embed.setDescription('You cannot change the prefix in direct message channel.')]}));
 
         const newprefix = args[0];
         if (await ServerModel.exists({ _id : message.guild.id}))
@@ -30,7 +30,7 @@ module.exports = {
         else await ServerModel.create({ _id : message.guild.id, prefix : newprefix});
         client.prefix[message.guild.id] = newprefix;
         embed.setDescription(`Prefix changed to \`${newprefix}\` for this server`);
-        message.channel.send(embed);
+        message.channel.send({embeds: [embed]});
         message.guild.me.setNickname(`${client.user.username} (${newprefix})`);
     },
 };

@@ -89,7 +89,7 @@ function commandLog(message, command, args, joined) {
 
 function checkChannel(message, command, embed) {
     if ((message.channel.type == 'dm' && command.channelType == 1) || (message.channel.type != 'dm' && command.channelType == -1)) {
-        message.channel.send(embed.setDescription('You cannot use that command here. Please refer to `help` for more details.'));
+        message.channel.send({embeds: [embed.setDescription('You cannot use that command here. Please refer to `help` for more details.')]});
         return false;
     }
     return true;
@@ -102,23 +102,23 @@ function checkUserPermission(message, command) {
         case 'owner':
             return (message.member == message.guild.owner);
         case 'administrators':
-            return (message.member.hasPermission('ADMINISTRATOR'));
+            return (message.member.permissions.has('ADMINISTRATOR'));
         case 'moderators':
             return (message.guild.id == tlg.id
                 ? message.member.roles.cache.find(r => r.id == tlg.modRoleID)
-                    || message.member.hasPermission('ADMINISTRATOR')
-                : message.member.hasPermission('ADMINISTRATOR'));
+                    || message.member.permissions.has('ADMINISTRATOR')
+                : message.member.permissions.has('ADMINISTRATOR'));
         case 'dungeonmasters':
             return (message.guild.id == tlg.id
                 ? message.member.roles.cache.find(r => r.id == tlg.dmRoleID)
                     || message.member.roles.cache.find(r => r.id == tlg.modRoleID)
-                    || message.member.hasPermission('ADMINISTRATOR')
-                : message.member.hasPermission('ADMINISTRATOR'));
+                    || message.member.permissions.has('ADMINISTRATOR')
+                : message.member.permissions.has('ADMINISTRATOR'));
         case 'role':
             
             break;
         case 'special':
-            return (message.member.hasPermission(command.userPermissionList, {checkAdmin: true, checkOwner: true}));
+            return (message.member.permissions.has(command.userPermissionList, {checkAdmin: true, checkOwner: true}));
         case 'everyone':
             return true;
         default:
@@ -128,10 +128,10 @@ function checkUserPermission(message, command) {
 
 function checkBotPermission(message, command, embed) {
     if (message.channel.type == 'dm') return true;
-    if (!message.guild.me.hasPermission([...command.botPermissionList, 'SEND_MESSAGES'], {checkAdmin: true, checkOwner: true})) {
+    if (!message.guild.me.permissions.has([...command.botPermissionList, 'SEND_MESSAGES'], {checkAdmin: true, checkOwner: true})) {
         embed.setDescription('Cannot execute the command because the bot lacks the following permissions:\n'
             + `\`${command.botPermissionList.filter(p => !message.guild.me.permissions.toArray().includes(p)).join('`, `')}\``);
-        message.channel.send(embed);
+        message.channel.send({embeds: [embed]});
         return false;
     };
     return true;
@@ -156,14 +156,14 @@ async function executeCommand(client, message) {
     let embed = client.util.newReturnEmbed(message);
     if (!checkChannel(message, command, embed) || command.module == 'TLG' && (message.channel.type == 'dm' || message.guild.id != tlg.id)) {
         embed.setDescription('This command is not for this channel/server. Please refer to `help` for more information.');
-        return message.channel.send(embed);
+        return message.channel.send({embeds: [embed]});
     }
 
     //check number of arguments
     if (args.length < command.minArguments) {
         embed.setDescription(`There are not enough arguments to execute that command.\n`
             + `You provided \`${args.length}\` ${args.length > 1 ? 'arguments' : 'argument'}, but at least \`${command.minArguments}\` ${command.minArguments > 1 ? 'are' : 'is'} needed.`);
-        return message.channel.send(embed);
+        return message.channel.send({embeds: [embed]});
     }
     
     //check permissions

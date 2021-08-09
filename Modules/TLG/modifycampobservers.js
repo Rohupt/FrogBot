@@ -29,17 +29,17 @@ module.exports = {
         
         let {camp, campVar} = await client.util.findCamp(message, args);
         if (!camp)
-            return message.channel.send(embed.setDescription("Please enter the camp name."));
+            return message.channel.send({embeds: [embed.setDescription("Please enter the camp name.")]});
         
         embed.setTitle(camp.name);
-        if (message.author.id != camp.DM && !message.member.roles.cache.some(r => r.id == tlg.modRoleID) && !message.member.hasPermission('ADMINISTRATOR')) {
+        if (message.author.id != camp.DM && !message.member.roles.cache.some(r => r.id == tlg.modRoleID) && !message.member.permissions.has('ADMINISTRATOR')) {
             embed.setDescription("You are not the Dungeon Master of this camp, nor a moderator.\nYou cannot use this command.");
-            return message.channel.send(embed);
+            return message.channel.send({embeds: [embed]});
         };
         
         if (campVar && args.length <= 1 || !campVar && args.length <= 0) {
             embed.setDescription("Please provide at least some names.");
-            return message.channel.send(embed);
+            return message.channel.send({embeds: [embed]});
         };
 
         const rpCh = guild.channels.resolve(camp.roleplayChannel), dcCh = guild.channels.resolve(camp.discussChannel);
@@ -50,7 +50,7 @@ module.exports = {
                 let mem = client.util.user(message.guild, arg);
                 if (mem) {
                     if (!camp.players.includes(mem.id)) {
-                        if (rpCh.permissionOverwrites.has(mem.id)) removeList.push(mem);
+                        if (rpCh.permissionOverwrites.cache.has(mem.id)) removeList.push(mem);
                         else addList.push(mem);
                     };
                 };
@@ -94,15 +94,13 @@ module.exports = {
         };
 
         removeList.forEach(mem => {
-            if (rpCh.permissionOverwrites.has(mem.id))
-                rpCh.permissionOverwrites.get(mem.id).delete();
-            if (dcCh.permissionOverwrites.has(mem.id))
-                dcCh.permissionOverwrites.get(mem.id).delete();
+            rpCh.permissionOverwrites.delete(mem.id);
+                dcCh.permissionOverwrites.delete(mem.id);
         });
         addList.forEach(mem => {
             if (!(mem.roles.cache.find(role => role.id == tlg.modRoleID) || mem.roles.cache.find(role => role.id == tlg.adminRoleID) || mem.user.bot)) {
-                rpCh.updateOverwrite(mem, {'SEND_MESSAGES': false, 'VIEW_CHANNEL': true});
-                dcCh.updateOverwrite(mem, {'VIEW_CHANNEL': true});
+                rpCh.permissionOverwrites.create(mem, {'SEND_MESSAGES': false, 'VIEW_CHANNEL': true});
+                dcCh.permissionOverwrites.create(mem, {'VIEW_CHANNEL': true});
             }
         });
         
@@ -113,6 +111,6 @@ module.exports = {
         embed.setTitle(camp.name).setDescription(desc)
             .addField("Observers added", addField ? addField : "None", true)
             .addField("Observers removed", removeField ? removeField : "None", true);
-        message.channel.send(embed);
+        message.channel.send({embeds: [embed]});
     },
 };

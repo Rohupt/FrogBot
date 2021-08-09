@@ -3,6 +3,8 @@ const name = __filename.split(sep)[__filename.split(sep).length - 1].replace(/\.
 const mod = __dirname.split(sep)[__dirname.split(sep).length - 1];
 const aliases = ['rl'];
 
+const Discord = require('discord.js');
+
 module.exports = {
     name: name,
     module: mod,
@@ -30,6 +32,6 @@ module.exports = {
         roleList.forEach((role, index) => {
             reply += `\`#${(index + 1).toString().padStart(pad)} (${role.position.toString().padStart(pad)}/${role.rawPosition.toString().padStart(pad)}): ${role.name}\`\n`;
         });
-        message.channel.send(reply, {split: true});
+        Discord.Util.splitMessage(reply).forEach(m => message.channel.send(m));
     },
 };

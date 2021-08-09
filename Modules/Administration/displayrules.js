@@ -32,9 +32,7 @@ module.exports = {
         rulesAndFAQs.rules.rules.forEach(rule => ruleEmbed.addField(rule.name, rule.text + "\n\u200b"));
         rulesAndFAQs.faqs.forEach(q => faqEmbed.addField(q.name, q.text+ "\n\u200b"));
 
-        await message.channel.send(ruleEmbed);
-        await message.channel.send(faqEmbed);
-        await message.channel.send(formsEmbed);
+        await message.channel.send({embeds: [ruleEmbed, faqEmbed, formsEmbed]});
         await message.delete();
     },
 };

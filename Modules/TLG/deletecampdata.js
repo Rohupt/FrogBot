@@ -13,24 +13,22 @@ module.exports = {
     permission: 'moderators',
     userPermissionList: [],
     botPermissionList: [],
-    minArguments: 0,
+    minArguments: 1,
     
     description: 'Delete a campaign from database. It doesn\'t affect the channels and role.' ,
-    usage: `\`<commandname> <name>\` Delete a campaign named <name>\n` +
-        'The name should be wrapped in double quotes if it contains a space.',
+    usage: `\`<commandname> <name>\` Delete a campaign named <name>`,
 
     async execute(client, message, args, joined, embed) {
         var tlg = client.util.reloadFile('@data/tlg.json');
         var campList = await CampModel.find({});
         
-        const campName = joined;
-        const camp = campList.find(c => c.name.toLowerCase().includes(campName.toLowerCase()));
+        const camp = campList.find(c => c.name.toLowerCase().includes(joined.toLowerCase()) || c.name.toLowerCase().includes(args[0]?.toLowerCase()));
         if (!camp) {
             embed.setDescription('There is no campaign with such name.');
-            return message.channel.send(embed);
+            return message.channel.send({embeds: [embed]});
         };
 
         await CampModel.deleteOne({ _id: camp.id });
-        message.reply(embed.setDescription("Campaign data deleted."));
+        message.reply({embeds: [embed.setDescription("Campaign data deleted.")]});
     },
 };

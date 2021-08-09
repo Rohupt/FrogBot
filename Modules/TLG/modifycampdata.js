@@ -35,7 +35,7 @@ module.exports = {
         var camp = campList.find(c => c.name.toLowerCase().includes(args[0].toLowerCase()));
         if (!camp) {
             embed.setDescription(`There is no campaign named \`${args[0]}\`.`);
-            return message.channel.send(embed);
+            return message.channel.send({embeds: [embed]});
         };
         
         embed.setTitle(camp.name)
@@ -69,7 +69,7 @@ module.exports = {
                     if (dm) camp.DM = dm.id;
                     else {
                         embed.setDescription('Could not find the DM.');
-                        message.channel.send(embed);
+                        message.channel.send({embeds: [embed]});
                         return null;
                     }
                     break;
@@ -90,7 +90,7 @@ module.exports = {
                     if (rpCh) camp.roleplayChannel = rpCh.id;
                     else {
                         embed.setDescription('Could not find the roleplay channel.');
-                        message.channel.send(embed);
+                        message.channel.send({embeds: [embed]});
                         return null;
                     }
                     break;
@@ -101,7 +101,7 @@ module.exports = {
                     if (dcCh) camp.discussChannel = dcCh.id;
                     else {
                         embed.setDescription('Could not find the discussion channel.');
-                        message.channel.send(embed);
+                        message.channel.send({embeds: [embed]});
                         return null;
                     }
                     break;
@@ -111,7 +111,7 @@ module.exports = {
                     if (role) camp.role = role.id;
                     else {
                         embed.setDescription('Could not find the discussion channel.');
-                        message.channel.send(embed);
+                        message.channel.send({embeds: [embed]});
                         return null;
                     }
                     break;
@@ -125,14 +125,14 @@ module.exports = {
                 default:
                     embed = client.util.newReturnEmbed(message);
                     embed.setDescription(`Unexpected field \`${args[i]}\`` + '. Please insert `--name`/`-n`, `--dungeonmaster`/`-m`, `--description`/`--desc`/`-d`, `--notes`/`--note`/`-o`, and `--type`/`-t`.');
-                    message.channel.send(embed);
+                    message.channel.send({embeds: [embed]});
                     return null;
             }
         }
         if (!camp.DM || !camp.name || !camp.roleplayChannel || !camp.discussChannel || !camp.role) {
             embed = client.util.newReturnEmbed(message);
             embed.setDescription("Not enough information. Please make sure the campaign's name, dungeon master, role and channels are provided.");
-            message.channel.send(embed);
+            message.channel.send({embeds: [embed]});
             return null;
         }
     
@@ -147,6 +147,6 @@ module.exports = {
         
         await CampModel.updateOne({ _id: camp.id}, camp);
         embed.setDescription('Campaign data added successfully. Please recheck:');
-        message.channel.send(embed);
+        message.channel.send({embeds: [embed]});
     },
 };

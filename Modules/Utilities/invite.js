@@ -19,6 +19,6 @@ module.exports = {
     async execute(client, message, args, joined, embed) {
         embed.setTitle('Invite me to your server!')
             .setDescription(`You can use [this link](${process.env.INVITE}) to invite me to your server.`);
-        message.channel.send(embed);
+        message.channel.send({embeds: [embed]});
     },
 };

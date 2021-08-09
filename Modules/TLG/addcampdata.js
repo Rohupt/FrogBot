@@ -45,7 +45,7 @@ function createCampData(client, message, args, embed, guild) {
                 if (dm) newCamp.DM = dm.id;
                 else {
                     embed.setDescription('Could not find the DM.');
-                    message.channel.send(embed);
+                    message.channel.send({embeds: [embed]});
                     return null;
                 }
                 break;
@@ -66,7 +66,7 @@ function createCampData(client, message, args, embed, guild) {
                 if (rpCh) newCamp.roleplayChannel = rpCh.id;
                 else {
                     embed.setDescription('Could not find the roleplay channel.');
-                    message.channel.send(embed);
+                    message.channel.send({embeds: [embed]});
                     return null;
                 }
                 break;
@@ -77,7 +77,7 @@ function createCampData(client, message, args, embed, guild) {
                 if (dcCh) newCamp.discussChannel = dcCh.id;
                 else {
                     embed.setDescription('Could not find the discussion channel.');
-                    message.channel.send(embed);
+                    message.channel.send({embeds: [embed]});
                     return null;
                 }
                 break;
@@ -87,7 +87,7 @@ function createCampData(client, message, args, embed, guild) {
                 if (role) newCamp.role = role.id;
                 else {
                     embed.setDescription('Could not find the discussion channel.');
-                    message.channel.send(embed);
+                    message.channel.send({embeds: [embed]});
                     return null;
                 }
                 break;
@@ -101,14 +101,14 @@ function createCampData(client, message, args, embed, guild) {
             default:
                 embed = client.util.newReturnEmbed(message);
                 embed.setDescription(`Unexpected field \`${args[i]}\`` + '. Please insert `--name`/`-n`, `--dungeonmaster`/`-m`, `--description`/`--desc`/`-d`, `--notes`/`--note`/`-o`, and `--type`/`-t`.');
-                message.channel.send(embed);
+                message.channel.send({embeds: [embed]});
                 return null;
         }
     }
     if (!newCamp.DM || !newCamp.name || !newCamp.roleplayChannel || !newCamp.discussChannel || !newCamp.role) {
         embed = client.util.newReturnEmbed(message);
         embed.setDescription("Not enough information. Please make sure the campaign's name, dungeon master, role and channels are provided.");
-        message.channel.send(embed);
+        message.channel.send({embeds: [embed]});
         return null;
     }
 
@@ -163,6 +163,6 @@ module.exports = {
 
         if (newCamp.description) embed.addField("Description", newCamp.description);
         if (newCamp.notes) embed.addField("Notes", newCamp.notes);
-        message.channel.send(embed);
+        message.channel.send({embeds: [embed]});
     },
 };

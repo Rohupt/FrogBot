@@ -27,16 +27,16 @@ module.exports = {
             try {
                 guild = await client.guilds.fetch(subArgs[0]);
             } catch (error) {
-                return message.channel.send(embed.setDescription('Cannot access the guild.'));
+                return message.channel.send({embeds: [embed.setDescription('Cannot access the guild.')]});
             }
-            if (!guild) return message.channel.send(embed.setDescription('Cannot access the guild.'));
+            if (!guild) return message.channel.send({embeds: [embed.setDescription('Cannot access the guild.')]});
             
             try {
                 channel = await guild.channels.resolve(subArgs[1]);
             } catch (error) {
-                return message.channel.send(embed.setDescription('Cannot access the channel.'));
+                return message.channel.send({embeds: [embed.setDescription('Cannot access the channel.')]});
             }
-            if (!channel) return message.channel.send(embed.setDescription('Cannot access the channel.'));
+            if (!channel) return message.channel.send({embeds: [embed.setDescription('Cannot access the channel.')]});
             
             quoted = await channel.messages.fetch(subArgs[2]);
         } else {
@@ -77,7 +77,10 @@ module.exports = {
                         ? message.member.nickname : message.author.username,
                 {avatar: message.author.displayAvatarURL()});
 
-        webhook.send(args.includes('-n') ? quoted.content : null, [args.includes('-n') ? image : embed, ...quoted.embeds]);
+        webhook.send(args.includes('-n') ? quoted.content : null,
+            args.includes('-n')
+                ? {files: [image], embeds: [...quoted.embeds]}
+                : {embeds: [embed, ...quoted.embeds]});
         await message.delete();
         await webhook.delete();
     },

@@ -26,8 +26,8 @@ module.exports = {
             : args[0] == '12' ? '12 months'
             : null;
         if (!subsTime)
-            return message.channel.send(embed.setDescription('Invalid option.\n\n' +
-                'Available options are:\n` 1`: 01 month (VND 60 000);\n` 3`: 03 months (VND 160 000);\n` 6`: 06 months (VND 290 000);\n`12`: 12 months (VND 520 000).'));
+            return message.channel.send({embeds: [embed.setDescription('Invalid option.\n\n' +
+                'Available options are:\n` 1`: 01 month (VND 60 000);\n` 3`: 03 months (VND 160 000);\n` 6`: 06 months (VND 290 000);\n`12`: 12 months (VND 520 000).')]});
         
         let price = args[0] == '1' ? 60000
             : args[0] == '3' ? 160000
@@ -42,7 +42,7 @@ module.exports = {
             `and send the receipt screenshot to <@!499587089038442536> (in direct messages) to complete registering.\n\n` +
             `${message.member.roles.cache.find(r => r.id == '634967372976881664') ? 'You have 10% discount due to having the <@&634967372976881664> role.\n' : ''}` +
             `Any ${message.member.roles.cache.find(r => r.id == '634967372976881664') ? 'other ' : ''}discounts will be informed to you by the subscription admins.`;
-        await beyondChannel.send(embed.setDescription(messageToAdmins));
-        return message.channel.send(embed.setDescription(messageToUser));
+        await beyondChannel.send({embeds: [embed.setDescription(messageToAdmins)]});
+        return message.channel.send({embeds: [embed.setDescription(messageToUser)]});
     },
 };

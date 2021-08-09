@@ -22,14 +22,14 @@ module.exports = {
     async execute(client, message, args, joined, embed) {
         let {camp, campVar} = await client.util.findCamp(message, args);
         if (!camp)
-            return message.channel.send(embed.setDescription("Please enter the camp name."));
+            return message.channel.send({embeds: [embed.setDescription("Please enter the camp name.")]});
         
         
         let tempPlayer = campVar ? client.util.user(message.guild, args[1]) : client.util.user(message.guild, args[0]);
         if (!tempPlayer)
-            return message.channel.send(embed.setDescription("Please specify a player."));
+            return message.channel.send({embeds: [embed.setDescription("Please specify a player.")]});
         if (!camp.players.find(p => p.id == tempPlayer.id))
-            return message.channel.send(embed.setDescription("That user is not a player of this camp."));
+            return message.channel.send({embeds: [embed.setDescription("That user is not a player of this camp.")]});
         player = tempPlayer.id;
 
         let campPlayer = camp.players.find(p => p.id == player);
@@ -41,6 +41,6 @@ module.exports = {
         if (campPlayer.token)
             embed.setImage(campPlayer.token);
 
-        message.channel.send(embed);
+        message.channel.send({embeds: [embed]});
     },
 };

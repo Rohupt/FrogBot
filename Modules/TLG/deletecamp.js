@@ -22,21 +22,23 @@ module.exports = {
     async execute(client, message, args, joined, embed) {
         var tlg = client.util.reloadFile('@data/tlg.json');
         let camp = (await client.util.findCamp(message, args)).camp;
+        var campList = await CampModel.find({});
+        let guild = message.guild;
         if (!camp)
-            return message.channel.send(embed.setDescription("Please enter the camp name."));
+            return message.channel.send({embeds: [embed.setDescription("Please enter the camp name.")]});
 
         var cont = false;
         embed.setDescription(`Do you really want to delete the campaign \`${camp.name}\`?\nAnything other than \`Absolutely yes\`will be interpreted as \`no\`.`)
-        await message.reply(embed)
+        await message.reply({embeds: [embed]})
             .then(async () => {
-                await message.channel.awaitMessages(m => m.author == message.author, {idle : 60000, dispose : true, max : 1, error : ['time']})
+                await message.channel.awaitMessages({filter: m => m.author == message.author, idle : 60000, dispose : true, max : 1, error : ['time']})
                     .then(collected => {
                         if (collected.first().content.toLowerCase().startsWith(`absolutely yes`))
                             cont = true;
                     });
             });
         if (!cont)
-            return message.reply(embed.setDescription("Campaign deletion cancelled."));
+            return message.reply({embeds: [embed.setDescription("Campaign deletion cancelled.")]});
         
         try {
             await guild.roles.resolve(camp.role).delete();
@@ -61,6 +63,6 @@ module.exports = {
         };
         await CampModel.deleteOne({ _id: camp.id });
         let reportChannel = message.channel || message.author.dmChannel;
-        await reportChannel.send(embed.setDescription("Campaign deleted."));
+        await reportChannel.send({embeds: [embed.setDescription("Campaign deleted.")]});
     },
 };

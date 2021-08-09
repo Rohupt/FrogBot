@@ -3,6 +3,8 @@ const name = __filename.split(sep)[__filename.split(sep).length - 1].replace(/\.
 const mod = __dirname.split(sep)[__dirname.split(sep).length - 1];
 const aliases = ['cl'];
 
+const Discord = require('discord.js');
+
 module.exports = {
     name: name,
     module: mod,
@@ -17,7 +19,7 @@ module.exports = {
 
     execute(client, message, args) {
         const channels = message.guild.channels.cache;
-        const channelList = Array.from(channels.values()).sort((a, b) => {
+        const channelList = Array.from(channels.values()).filter(channel => channel.position != undefined && channel != null).sort((a, b) => {
             if (args.includes('-s'))
                 switch (args[args.indexOf('-s') + 1]) {
                     case 'pos':
@@ -30,7 +32,9 @@ module.exports = {
                             : b.position - a.position;
                     case 'cat':
                         function category(channel) {
-                            return channel.type == 'category' ? channel : channel.parent;
+                            let c = channel;
+                            while (c != null && c.type != 'GUILD_CATEGORY') c = c.parent;
+                            return c;
                         }
                         return category(a).position != category(b).position
                             ? category(a).position - category(b).position
@@ -38,6 +42,7 @@ module.exports = {
                 }
             else return a < b ? -1 : a == b ? 0 : 1;
         });
+        console.log(channelList.length);
         var reply = ``, count = 0;
         const pad = Math.floor(Math.log10(channels.size)) + 1;
 
@@ -45,6 +50,6 @@ module.exports = {
             if (!args.includes('-t') || args[args.indexOf('-t') + 1] == channel.type)
                 reply += `\`#${(++count).toString().padStart(pad)} (${channel.position.toString().padStart(pad)}/${channel.rawPosition.toString().padStart(pad)}):\` ${channel}\n`;
         });
-        message.channel.send(reply, {split: true});
+        Discord.Util.splitMessage(reply).forEach(m => message.channel.send(m));
     },
 };

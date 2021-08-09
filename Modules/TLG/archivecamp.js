@@ -24,7 +24,7 @@ module.exports = {
             archive : function() {
                 let tlg = client.util.reloadFile('@data/tlg.json');
                 return Array.from(client.guilds.cache.get(tlg.id).channels.cache.values())
-                    .filter(ch => (ch.parentID == tlg.archiveCat))
+                    .filter(ch => (ch.parentId == tlg.archiveCat))
                     .sort((a, b) => {return b.position - a.position})[0]
                     .position;
             },
@@ -36,24 +36,24 @@ module.exports = {
         
         let camp = (await client.util.findCamp(message, args)).camp;
         if (!camp)
-            return message.channel.send(embed.setDescription("Please enter the camp name."));
+            return message.channel.send({embeds: [embed.setDescription("Please enter the camp name.")]});
         
         var cont = false;
         embed.setDescription(`do you really want to archive the campaign \`${camp.name}\`?\nAnything other than \`Absolutely yes\`will be interpreted as \`no\`.`)
-        await message.reply(embed)
+        await message.reply({embeds: [embed]})
             .then(async () => {
-                await message.channel.awaitMessages(m => m.author == message.author, {idle : 60000, dispose : true, max : 1, error : ['time']})
+                await message.channel.awaitMessages({filter: m => m.author == message.author, idle : 60000, dispose : true, max : 1, error : ['time']})
                     .then(collected => {
                         if (collected.first().content.toLowerCase().startsWith(`absolutely yes`))
                             cont = true;
                     });
             });
         if (!cont)
-            return message.channel.send(embed.setDescription("Campaign archiving cancelled."));
+            return message.channel.send({embeds: [embed.setDescription("Campaign archiving cancelled.")]});
 
         if (client.util.channel(message.guild, archiveCat).children.size >= client.constants.MAX_CHANNELS_PER_CATEGORY) {
             let prefix = await client.util.commandPrefix(client, message);
-            return message.channel.send(embed.setDescription(`Archive category full. Please change to another category (using \`${prefix}ac\`) before continuing.`));
+            return message.channel.send({embeds: [embed.setDescription(`Archive category full. Please change to another category (using \`${prefix}ac\`) before continuing.`)]});
         }
         
         const newPos = pos.archive() + 1;
@@ -65,7 +65,7 @@ module.exports = {
         } catch (error) {
             console.error(error);
             embed.setDescription("...oops, seems like there is an error. Deletion incomplete. Please continue manually.")
-            message.reply(embed);
+            message.reply({embeds: [embed]});
             return message.channel.send(`\`\`\`\n${error}\n\`\`\``);
         }
 
@@ -85,6 +85,6 @@ module.exports = {
         };
         
         let reportChannel = message.channel || message.author.dmChannel;
-        await reportChannel.send(embed.setDescription("Campaign archived."));
+        await reportChannel.send({embeds: [embed.setDescription("Campaign archived.")]});
     },
 };

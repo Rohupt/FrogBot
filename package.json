@@ -1,13 +1,13 @@
 {
   "name": "frogbot",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "My own Discord bot template",
   "main": "index.js",
   "author": "Rohupt",
   "dependencies": {
     "chokidar": "^3.4.2",
     "discord-fetch-all": "^3.0.2",
-    "discord.js": "^12.3.1",
+    "discord.js": "^13.0.1",
     "dotenv": "^10.0.0",
     "edit-json-file": "^1.4.1",
     "eslint": "^7.27.0",

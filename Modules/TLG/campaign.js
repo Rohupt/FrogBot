@@ -98,11 +98,11 @@ module.exports = {
             result = filterCampList(campList, client, message, args, joined);
         } catch (error) {
             console.log(error);
-            return message.channel.send(embed.setDescription(error));
+            return message.channel.send({embeds: [embed.setDescription(error)]});
         }
         
         if (!result.length)
-            return message.channel.send(embed.setDescription(args.length ? `No results found.` : `There is no campaign available.`));
+            return message.channel.send({embeds: [embed.setDescription(args.length ? `No results found.` : `There is no campaign available.`)]});
         
         if (result.length == 1) {
             let camp = result[0];
@@ -118,7 +118,7 @@ module.exports = {
                 .addField("Players", camp.players.length ? players : "No one yet");
             if (camp.description) embed.addField("Description", camp.description);
             if (camp.notes) embed.addField("Notes", camp.notes);
-            return message.channel.send(embed);
+            return message.channel.send({embeds: [embed]});
         }
         
         result = result.sort((a, b) => a.isOS == b.isOS ? a.name.localeCompare(b.name, 'vi', { sensitivity: "accent" }) : a.isOS ? -1 : 1);
@@ -130,8 +130,8 @@ module.exports = {
             if (args.findIndex(pageFilter) + 1 < args.length) {
                 page = Number.parseInt(args[args.findIndex(pageFilter) + 1]);
                 if (page === NaN || page > pages || page < 1)
-                    return (message.channel.send(embed.setDescription('Invalid page number.')));
-            } else return (message.channel.send(embed.setDescription('Please provide page number.')));
+                    return (message.channel.send({embeds: [embed.setDescription('Invalid page number.')]}));
+            } else return (message.channel.send({embeds: [embed.setDescription('Please provide page number.')]}));
         else page = 1;
         
         let desc = '';
@@ -140,6 +140,6 @@ module.exports = {
         embed.setTitle('Campaigns list')
             .setDescription(desc)
             .setFooter(`Page ${page} of ${pages}`);
-        return message.channel.send(embed);
+        return message.channel.send({embeds: [embed]});
     },
 };

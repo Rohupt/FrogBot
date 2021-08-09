@@ -24,24 +24,24 @@ module.exports = {
         let tlgEdit = ejf('Data/tlg.json');
 
         if (args.length == 0) {
-            return message.channel.send(
-                embed.setDescription(`Current archive category is **<#${tlg.archiveCat}>**.`)
-            );
+            return message.channel.send({
+                embeds: [embed.setDescription(`Current archive category is **<#${tlg.archiveCat}>**.`)]
+            });
         } else {
             let newAC = client.util.channel(message.guild, args[0]);
             if (!newAC || newAC.type != 'category')
-                return message.channel.send(
-                    embed.setDescription('Invalid category. Please provide an ID of a **Category** channel within **this server**.')
-                );
+                return message.channel.send({
+                    embeds: [embed.setDescription('Invalid category. Please provide an ID of a **Category** channel within **this server**.')]
+                });
             if (newAC.children.size >= client.constants.MAX_CHANNELS_PER_CATEGORY)
-                return message.channel.send(
-                    embed.setDescription('Category already full. Please choose another category.')
-                );
+                return message.channel.send({
+                    embeds: [embed.setDescription('Category already full. Please choose another category.')]
+                });
             tlgEdit.set("archiveCat", newAC.id);
             tlgEdit.save();
-            return await message.channel.send(
-                embed.setDescription(`Archive category changed to **<#${newAC.id}>**.`)
-            );
+            return await message.channel.send({
+                embeds: [embed.setDescription(`Archive category changed to **<#${newAC.id}>**.`)]
+            });
         }
     },
 };

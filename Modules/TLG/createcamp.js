@@ -43,9 +43,9 @@ async function createCamp(client, message, embed, guild) {
     var warning = "";
     embed.setDescription(warning + '**' + description + '**' + exitMsg);
     var infoMsg;
-    await message.channel.send(embed).then(async (msg) => {
+    await message.channel.send({embeds: [embed]}).then(async (msg) => {
         infoMsg = msg;
-        await message.channel.awaitMessages(filter, {idle : idle, dispose : true, max : 1, error : ['time']})
+        await message.channel.awaitMessages({filter, idle : idle, dispose : true, max : 1, error : ['time']})
             .then(collected => {
                 if (collected.first().content != 'exit' && collected.first().content != 'cancel') {
                     embed.setTitle(collected.first().content);
@@ -66,8 +66,8 @@ async function createCamp(client, message, embed, guild) {
     description = "Is it an ONESHOT? Anything other than `yes` or `y` will be understood as `no` (i.e. it's a long camp)."
     warning = "";
     embed.setDescription(warning + '**' + description + '**' + exitMsg);
-    await infoMsg.edit(embed).then(async () => {
-        await message.channel.awaitMessages(filter, {idle : idle, dispose : true, max : 1, error : ['time']})
+    await infoMsg.edit({embeds: [embed]}).then(async () => {
+        await message.channel.awaitMessages({filter, idle : idle, dispose : true, max : 1, error : ['time']})
             .then(collected => {
                 const content = collected.first().content;
                 if (content != 'exit' && content != 'cancel') {
@@ -91,8 +91,8 @@ async function createCamp(client, message, embed, guild) {
     do {
         embed.setDescription(warning + '**' + description + '**' + exitMsg);
         warning = "Your input was not valid.\n";
-        await infoMsg.edit(embed).then(async () => {
-            await message.channel.awaitMessages(filter, {idle : idle, dispose : true, max : 1, error : ['time']})
+        await infoMsg.edit({embeds: [embed]}).then(async () => {
+            await message.channel.awaitMessages({filter, idle : idle, dispose : true, max : 1, error : ['time']})
                 .then(collected => {
                     const content = collected.first().content;
                     if (content != 'exit' && content != 'cancel') {
@@ -117,8 +117,8 @@ async function createCamp(client, message, embed, guild) {
     description = "Please provide some description for the camp, or `next`/`none` if there is no description."
     warning = "";
     embed.setDescription(warning + '**' + description + '**' + exitMsg);
-    await infoMsg.edit(embed).then(async () => {
-        await message.channel.awaitMessages(filter, {idle : idle, dispose : true, max : 1, error : ['time']})
+    await infoMsg.edit({embeds: [embed]}).then(async () => {
+        await message.channel.awaitMessages({filter, idle : idle, dispose : true, max : 1, error : ['time']})
             .then(collected => {
                 const content = collected.first().content;
                 if (!['exit', 'cancel', 'next', 'none'].includes(content)) {
@@ -141,8 +141,8 @@ async function createCamp(client, message, embed, guild) {
         + "- Level bound\n- Playing schedule\n- Number of player slots\n- Restrictions\netc.";
     warning = "";
     embed.setDescription(warning + '**' + description + '**' + exitMsg);
-    await infoMsg.edit(embed).then(async () => {
-        await message.channel.awaitMessages(filter, {idle : idle, dispose : true, max : 1, error : ['time']})
+    await infoMsg.edit({embeds: [embed]}).then(async () => {
+        await message.channel.awaitMessages({filter, idle : idle, dispose : true, max : 1, error : ['time']})
             .then(collected => {
                 const content = collected.first().content;
                 if (!['exit', 'cancel', 'next', 'none'].includes(content)) {
@@ -193,11 +193,11 @@ function createCampShorthand(client, message, args, embed, guild) {
             case '-m':
             case '--dm':
             case '--dungeonmaster':
-                let dm = guild.members.resolveID(client.util.user(args[i+1]));
+                let dm = client.util.user(message.guild, args[i+1])?.id;
                 if (dm) newCamp.DM = dm;
                 else {
                     embed.setDescription('Cannot find the DM.');
-                    message.channel.send(embed);
+                    message.channel.send({embeds: [embed]});
                     return null;
                 }
                 break;
@@ -214,14 +214,14 @@ function createCampShorthand(client, message, args, embed, guild) {
             default:
                 embed = client.util.newReturnEmbed(message);
                 embed.setDescription(`Unexpected field \`${args[i]}\`` + '. Please insert `--name`/`-n`, `--dungeonmaster`/`-m`, `--description`/`--desc`/`-d`, `--notes`/`--note`/`-o`, and `--type`/`-t`.');
-                message.channel.send(embed);
+                message.channel.send({embeds: [embed]});
                 return null;
         }
     }
     if (!newCamp.DM || !newCamp.name) {
         embed = client.util.newReturnEmbed(message);
         embed.setDescription("Not enough information. Please make sure the campaign's name and dungeon master's identity are provided.");
-        message.channel.send(embed);
+        message.channel.send({embeds: [embed]});
         return null;
     }
     embed.setTitle(newCamp.name);
@@ -257,14 +257,14 @@ module.exports = {
             osRpChannel : function() {
                 let tlg = client.util.reloadFile('@data/tlg.json');
                 return Array.from(client.guilds.cache.get(tlg.id).channels.cache.values())
-                    .filter(ch => (ch.parentID == tlg.roleplayCat && ch.name.startsWith('os')))
+                    .filter(ch => (ch.parentId == tlg.roleplayCat && ch.name.startsWith('os')))
                     .sort((a, b) => {return b.position - a.position})[0]
                     .position;
             },
             osDiscChannel : function() {
                 let tlg = client.util.reloadFile('@data/tlg.json');
                 return Array.from(client.guilds.cache.get(tlg.id).channels.cache.values())
-                    .filter(ch => (ch.parentID == tlg.discussCat && ch.name.startsWith('os')))
+                    .filter(ch => (ch.parentId == tlg.discussCat && ch.name.startsWith('os')))
                     .sort((a, b) => {return b.position - a.position})[0]
                     .position;
             },
@@ -278,14 +278,14 @@ module.exports = {
             fullRpChannel : function() {
                 let tlg = client.util.reloadFile('@data/tlg.json');
                 return Array.from(client.guilds.cache.get(tlg.id).channels.cache.values())
-                    .filter(ch => (ch.parentID == tlg.roleplayCat && !ch.name.startsWith('os')))
+                    .filter(ch => (ch.parentId == tlg.roleplayCat && !ch.name.startsWith('os')))
                     .sort((a, b) => {return b.position - a.position})[0]
                     .position;
             },
             fullDiscChannel : function() {
                 let tlg = client.util.reloadFile('@data/tlg.json');
                 return Array.from(client.guilds.cache.get(tlg.id).channels.cache.values())
-                    .filter(ch => (ch.parentID == tlg.discussCat && !ch.name.startsWith('os')))
+                    .filter(ch => (ch.parentId == tlg.discussCat && !ch.name.startsWith('os')))
                     .sort((a, b) => {return b.position - a.position})[0]
                     .position;
             },
@@ -294,7 +294,7 @@ module.exports = {
                 return Array.from(client.guilds.cache.get(tlg.id).roles.cache.values())
                     .filter(r => r.name.startsWith('_'))
                     .sort((a, b) => {return b.position - a.position})[2]
-                    .position + 2;
+                    .position + 1;
             },
         };
         
@@ -316,7 +316,7 @@ module.exports = {
             embed = client.util.newReturnEmbed(message);
             embed.setDescription('Creation cancelled or failed.');
             if (args.length > 0) return;
-            else return message.channel.send(embed);
+            else return message.channel.send({embeds: [embed]});
         }
 
         //#region Creating camp
@@ -329,31 +329,29 @@ module.exports = {
         var rpCh, dcCh, role;
         try {
             await guild.roles.create({
-                data: {
-                    name: roleName,
-                    position: rolePos,
-                    mentionable: true
-                }
+                name: client.util.getCampNames(newCamp).roleName,
+                position: rolePos,
+                mentionable: true
             }).then(r => role = r);
             await guild.channels.create(chName, {
                 parent: tlg.discussCat,
                 position: dcChPos,
-                permissionOverwrites: guild.channels.resolve(tlg.discussCat).permissionOverwrites,
+                permissionOverwrites: guild.channels.resolve(tlg.discussCat).permissionOverwrites.cache,
             }).then(ch => {
                 dcCh = ch;
                 dcCh.setPosition(dcChPos);
-                dcCh.createOverwrite(role.id, {'VIEW_CHANNEL': true});
-                dcCh.createOverwrite(newCamp.DM, {'SEND_MESSAGES': true, 'MANAGE_MESSAGES': true});
+                dcCh.permissionOverwrites.create(role, {'VIEW_CHANNEL': true});
+                dcCh.permissionOverwrites.create(newCamp.DM, {'SEND_MESSAGES': true, 'MANAGE_MESSAGES': true});
             });
             await guild.channels.create(chName, {
                 parent: tlg.roleplayCat,
                 position: rpChPos,
-                permissionOverwrites: guild.channels.resolve(tlg.roleplayCat).permissionOverwrites,
+                permissionOverwrites: guild.channels.resolve(tlg.roleplayCat).permissionOverwrites.cache,
             }).then(ch => {
                 rpCh = ch;
                 rpCh.setPosition(rpChPos);
-                rpCh.createOverwrite(role.id, {'VIEW_CHANNEL': true});
-                rpCh.createOverwrite(newCamp.DM, {'SEND_MESSAGES': true, 'MANAGE_MESSAGES': true});
+                rpCh.permissionOverwrites.create(role, {'VIEW_CHANNEL': true});
+                rpCh.permissionOverwrites.create(newCamp.DM, {'SEND_MESSAGES': true, 'MANAGE_MESSAGES': true});
             });
         } catch (error) {
             console.error(error);
@@ -373,16 +371,19 @@ module.exports = {
         CampModel.create(newCamp);
         //#endregion Creating camp
         
-        guild.members.resolve(newCamp.DM).roles.add([role, guild.roles.resolve(tlg.dmRoleID)]);
+        let dm = guild.members.resolve(newCamp.DM);
+        await dm.roles.add([role]);
+        if (!dm.roles.cache.has(tlg.dmRoleID))
+            await dm.roles.add([tlg.dmRoleID]);
         rpCh.send(`${role} This is roleplay channel.`);
         dcCh.send(`${role} This is discussion channel.`);
 
         dmMsgEmbed = client.util.newReturnEmbed(message, await guild.members.resolve(newCamp.DM))
             .setTitle(`Welcome to campaign "${newCamp.name}"!`)
             .setDescription(MessageToDM);
-        dcCh.send(`<@!${newCamp.DM}>`, dmMsgEmbed);
+        dcCh.send({content: `<@!${newCamp.DM}>`, embeds: [dmMsgEmbed]});
         
         embed.setDescription("Campaign creation completed. Here are the initial details of the camp:");
-        message.channel.send(embed);
+        message.channel.send({embeds: [embed]});
     },
 };

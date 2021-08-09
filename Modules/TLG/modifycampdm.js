@@ -27,36 +27,39 @@ module.exports = {
         const camp = campList.find(c => c.name.toLowerCase().includes(args[0].toLowerCase()));
         if (!camp) {
             embed.setDescription(`There is no campaign named \`${args[0]}\`.`);
-            return message.channel.send(embed);
+            return message.channel.send({embeds: [embed]});
         };
 
         const newDM = guild.members.resolve(user(message.guild, args[1]));
         if (!newDM) {
-            embed.setDescription("Please provide a new DM's identity.");
-            return message.channel.send(embed);
+            embed.setDescription("Please provide the new DM's identity.");
+            return message.channel.send({embeds: [embed]});
         };
         const oldDM = guild.members.resolve(camp.DM);
         if (newDM === oldDM) {
             embed.setDescription("The old DM and the new one are the same person, hence no change made.");
-            return message.channel.send(embed);
+            return message.channel.send({embeds: [embed]});
         };
 
         const rpCh = guild.channels.resolve(camp.roleplayChannel), dcCh = guild.channels.resolve(camp.discussChannel);
         camp.DM = newDM.id;
-        if (rpCh.permissionOverwrites.get(oldDM.id)) rpCh.permissionOverwrites.get(oldDM.id).delete();
-        if (dcCh.permissionOverwrites.get(oldDM.id)) dcCh.permissionOverwrites.get(oldDM.id).delete();
+        rpCh.permissionOverwrites.delete(oldDM.id);
+        dcCh.permissionOverwrites.delete(oldDM.id);
         if (!camp.players.some(p => p == oldDM.id))
             oldDM.roles.remove(camp.role);
-        if (!campList.filter(c => c.DM == oldDM.id).length)
+        if (!campList.filter(c => c.DM == oldDM.id).length && oldDM.roles.cache.has(tlg.dmRoleID))
             oldDM.roles.remove(tlg.dmRoleID);
         
-        newDM.roles.add([camp.role, tlg.dmRoleID]);
-        rpCh.updateOverwrite(newDM, {'SEND_MESSAGES': true, 'MANAGE_MESSAGES': true});
-        dcCh.updateOverwrite(newDM, {'SEND_MESSAGES': true, 'MANAGE_MESSAGES': true});
+        if (!newDM.roles.cache.has(camp.role))
+            newDM.roles.add([camp.role]);
+        if (!newDM.roles.cache.has(tlg.dmRoleID))
+            await newDM.roles.add([tlg.dmRoleID]);
+        rpCh.permissionOverwrites.create(newDM, {'SEND_MESSAGES': true, 'MANAGE_MESSAGES': true});
+        dcCh.permissionOverwrites.create(newDM, {'SEND_MESSAGES': true, 'MANAGE_MESSAGES': true});
         
         await CampModel.updateOne({ _id: camp.id }, { $set: {DM: camp.DM}});
         embed.setTitle(camp.name).setDescription("Dungeon Master changed sucessfully:")
-            .addField('Old DM', oldDM, true).addField('New DM', newDM, true);
-        message.channel.send(embed);
+            .addField('Old DM', oldDM.toString(), true).addField('New DM', newDM.toString(), true);
+        message.channel.send({embeds: [embed]});
     },
 };

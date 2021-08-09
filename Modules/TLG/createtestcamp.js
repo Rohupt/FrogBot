@@ -25,14 +25,14 @@ module.exports = {
             osRpChannel : function() {
                 let tlg = client.util.reloadFile('@data/tlg.json');
                 return Array.from(client.guilds.cache.get(tlg.id).channels.cache.values())
-                    .filter(ch => (ch.parentID == tlg.roleplayCat && ch.name.startsWith('os')))
+                    .filter(ch => (ch.parentId == tlg.roleplayCat && ch.name.startsWith('os')))
                     .sort((a, b) => {return b.position - a.position})[0]
                     .position;
             },
             osDiscChannel : function() {
                 let tlg = client.util.reloadFile('@data/tlg.json');
                 return Array.from(client.guilds.cache.get(tlg.id).channels.cache.values())
-                    .filter(ch => (ch.parentID == tlg.discussCat && ch.name.startsWith('os')))
+                    .filter(ch => (ch.parentId == tlg.discussCat && ch.name.startsWith('os')))
                     .sort((a, b) => {return b.position - a.position})[0]
                     .position;
             },
@@ -46,14 +46,14 @@ module.exports = {
             fullRpChannel : function() {
                 let tlg = client.util.reloadFile('@data/tlg.json');
                 return Array.from(client.guilds.cache.get(tlg.id).channels.cache.values())
-                    .filter(ch => (ch.parentID == tlg.roleplayCat && !ch.name.startsWith('os')))
+                    .filter(ch => (ch.parentId == tlg.roleplayCat && !ch.name.startsWith('os')))
                     .sort((a, b) => {return b.position - a.position})[0]
                     .position;
             },
             fullDiscChannel : function() {
                 let tlg = client.util.reloadFile('@data/tlg.json');
                 return Array.from(client.guilds.cache.get(tlg.id).channels.cache.values())
-                    .filter(ch => (ch.parentID == tlg.discussCat && !ch.name.startsWith('os')))
+                    .filter(ch => (ch.parentId == tlg.discussCat && !ch.name.startsWith('os')))
                     .sort((a, b) => {return b.position - a.position})[0]
                     .position;
             },
@@ -62,7 +62,7 @@ module.exports = {
                 return Array.from(client.guilds.cache.get(tlg.id).roles.cache.values())
                     .filter(r => r.name.startsWith('_'))
                     .sort((a, b) => {return b.position - a.position})[2]
-                    .position + 2;
+                    .position + 1;
             },
         };
         
@@ -92,33 +92,35 @@ module.exports = {
         var rpCh, dcCh, role;
         try {
             await guild.roles.create({
-                data: {
-                    name: client.util.getCampNames(newCamp).roleName,
-                    position: rolePos,
-                    mentionable: true
-                }
+                name: client.util.getCampNames(newCamp).roleName,
+                position: rolePos,
+                mentionable: true
             }).then(r => role = r);
             await guild.channels.create(chName, {
                 parent: tlg.discussCat,
                 position: dcChPos,
-                permissionOverwrites: guild.channels.resolve(tlg.discussCat).permissionOverwrites,
-            }).then(ch => {
+                permissionOverwrites: guild.channels.resolve(tlg.discussCat).permissionOverwrites.cache,
+            }).then(async ch => {
                 dcCh = ch;
                 dcCh.setPosition(dcChPos);
-                dcCh.createOverwrite(role.id, {'VIEW_CHANNEL': true});
-                dcCh.createOverwrite(newCamp.DM, {'SEND_MESSAGES': true, 'MANAGE_MESSAGES': true});
+                await dcCh.permissionOverwrites.create(role, {'VIEW_CHANNEL': true});
+                await message.channel.send(`<@!${newCamp.DM}>`);
+                await console.log(client.users.resolve(newCamp.DM));
+                await dcCh.permissionOverwrites.create(newCamp.DM, {'SEND_MESSAGES': true, 'MANAGE_MESSAGES': true});
             });
             await guild.channels.create(chName, {
                 parent: tlg.roleplayCat,
                 position: rpChPos,
-                permissionOverwrites: guild.channels.resolve(tlg.roleplayCat).permissionOverwrites,
+                permissionOverwrites: guild.channels.resolve(tlg.roleplayCat).permissionOverwrites.cache,
             }).then(ch => {
                 rpCh = ch;
                 rpCh.setPosition(rpChPos);
-                rpCh.createOverwrite(role.id, {'VIEW_CHANNEL': true});
-                rpCh.createOverwrite(newCamp.DM, {'SEND_MESSAGES': true, 'MANAGE_MESSAGES': true});
+                rpCh.permissionOverwrites.create(role, {'VIEW_CHANNEL': true});
+                rpCh.permissionOverwrites.create(newCamp.DM, {'SEND_MESSAGES': true, 'MANAGE_MESSAGES': true});
             });
         } catch (error) {
+            if (role && client.util.role(message.guild, role.id))
+                role.delete();
             console.error(error);
             message.reply("...oops, seems like there is an error. Creation incomplete.");
             return message.channel.send(`\`\`\`\n${error}\n\`\`\``);
@@ -129,10 +131,13 @@ module.exports = {
         newCamp.discussChannel = dcCh.id;
         
         CampModel.create(newCamp);
-        guild.members.resolve(newCamp.DM).roles.add([role, guild.roles.resolve(tlg.dmRoleID)]);
+        let dm = guild.members.resolve(newCamp.DM);
+        await dm.roles.add([role]);
+        if (!dm.roles.cache.has(tlg.dmRoleID))
+            await dm.roles.add([tlg.dmRoleID]);
         rpCh.send(`${role} Đây là kênh roleplay.`);
         dcCh.send(`${role} Đây là kênh thảo luận.`);
 
-        message.channel.send(embed.setDescription(`Test camp created.\nRole: ${role}.\nRoleplay channel: ${rpCh}.\nDiscuss channel: ${dcCh}.`));
+        message.channel.send({embeds: [embed.setDescription(`Test camp created.\nRole: ${role}.\nRoleplay channel: ${rpCh}.\nDiscuss channel: ${dcCh}.`)]});
     },
 };

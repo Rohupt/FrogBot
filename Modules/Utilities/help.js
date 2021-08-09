@@ -84,6 +84,6 @@ module.exports = {
             }
         }
 
-        message.channel.send({embed, split: {char: '\n'}});
+        message.channel.send({embeds: [embed], split: {char: '\n'}});
     },
 };

@@ -27,6 +27,6 @@ module.exports = {
         embed.setDescription(`\`${joined}\``)
             .addField('Result', `\`${result}\``);
 
-        message.channel.send(embed);
+        message.channel.send({embeds: [embed]});
     },
 };

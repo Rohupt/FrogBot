@@ -34,9 +34,9 @@ module.exports = {
                     result = client.util.role(message.guild, args[1]);
                     break;
                 default:
-                    return message.channel.send(embed.setDescription('Wrong argument.'));
+                    return message.channel.send({embeds: [embed.setDescription('Wrong argument.')]});
             }
         }
-        message.channel.send(embed.setDescription(result ? result : 'Cannot resolve.'));
+        message.channel.send({embeds: [embed.setDescription(result ? result.toString() : 'Cannot resolve.')]});
     },
 };

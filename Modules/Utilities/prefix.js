@@ -24,6 +24,6 @@ module.exports = {
             .setDescription(`You can ping the bot (like, \`@${client.user.tag} prefix\`) to get it again if you forget it.\n`
             + `By the way, couldn't you see it in my nickname?`);
 
-        message.channel.send(embed);
+        message.channel.send({embeds: [embed]});
     },
 };

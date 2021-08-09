@@ -28,17 +28,17 @@ module.exports = {
         
         let {camp, campVar} = await client.util.findCamp(message, args);
         if (!camp)
-            return message.channel.send(embed.setDescription("Please enter the camp name."));
+            return message.channel.send({embeds: [embed.setDescription("Please enter the camp name.")]});
         
         embed.setTitle(camp.name);
-        if (message.author.id != camp.DM && !message.member.roles.cache.some(r => r.id == tlg.modRoleID) && !message.member.hasPermission('ADMINISTRATOR')) {
+        if (message.author.id != camp.DM && !message.member.roles.cache.some(r => r.id == tlg.modRoleID) && !message.member.permissions.has('ADMINISTRATOR')) {
             embed.setDescription("You are not the Dungeon Master of this camp, nor a moderator.\nYou cannot use this command.");
-            return message.channel.send(embed);
+            return message.channel.send({embeds: [embed]});
         };
         
         if (campVar && args.length <= 1 || !campVar && args.length <= 0) {
             embed.setDescription("Please provide at least some names.");
-            return message.channel.send(embed);
+            return message.channel.send({embeds: [embed]});
         };
 
         const aPos = args.indexOf('+'), rPos = args.indexOf('-');
@@ -114,6 +114,6 @@ module.exports = {
             .addField("Players added", addField ? addField : "None", true)
             .addField("Players removed", removeField ? removeField : "None", true)
             .addField("Current players list", camp.players.length ? resultField : "None");
-        message.channel.send(embed);
+        message.channel.send({embeds: [embed]});
     },
 };

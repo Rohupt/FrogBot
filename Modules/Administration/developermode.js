@@ -34,13 +34,13 @@ module.exports = {
             else if (['reverse', 'REVERSE', 'r', 'R', '-1', '/'].includes(args[0]))
                 state = !client.developerMode;
             else
-                return message.reply(embed.setDescription("That's not the expected input."));
+                return message.reply({embeds: [embed.setDescription("That's not the expected input.")]});
             
             client.developerMode = state;
             await client.util.setConfig('developerMode', state);
             embed.setDescription(`Developer Mode is now \`${state ? 'ON' : 'OFF'}\`.`)
             client.user.setActivity(`${state ? 'the dev only' : 'everyone'}`, {type: 'LISTENING'});
         };
-        message.channel.send(embed);
+        message.channel.send({embeds: [embed]});
     },
 };

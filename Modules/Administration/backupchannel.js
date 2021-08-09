@@ -26,9 +26,9 @@ module.exports = {
         try {
             channel = await client.util.channel(message.guild, args[0]);
         } catch (error) {
-            return message.channel.send(embed.setDescription('Cannot access the channel.'));
+            return message.channel.send({embeds: [embed.setDescription('Cannot access the channel.')]});
         }
-        if (!channel) return message.channel.send(embed.setDescription('Cannot access the channel.'));
+        if (!channel) return message.channel.send({embeds: [embed.setDescription('Cannot access the channel.')]});
         
         let messages = await fetchAll.messages(channel, {
             reverseArray: true, userOnly: false, botOnly: false, pinnedOnly: false
@@ -80,7 +80,7 @@ module.exports = {
         const path = `Data/Archives/${channel.name}.xlsx`;
         await workbook.xlsx.writeFile(path);
 
-        await message.channel.send([embed.setDescription('Archive completed.'), new Discord.MessageAttachment(path)]);
+        await message.channel.send({embeds: [embed.setDescription('Archive completed.')], files: [new Discord.MessageAttachment(path)]});
         FS.unlink(path, err => {if (err) console.error(err)});
     },
 };

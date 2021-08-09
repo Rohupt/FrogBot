@@ -39,14 +39,14 @@ module.exports = {
             osRpChannel : function() {
                 let tlg = client.util.reloadFile('@data/tlg.json');
                 return Array.from(client.guilds.cache.get(tlg.id).channels.cache.values())
-                    .filter(ch => (ch.parentID == tlg.roleplayCat && ch.name.startsWith('os')))
+                    .filter(ch => (ch.parentId == tlg.roleplayCat && ch.name.startsWith('os')))
                     .sort((a, b) => {return b.position - a.position})[0]
                     .position;
             },
             osDiscChannel : function() {
                 let tlg = client.util.reloadFile('@data/tlg.json');
                 return Array.from(client.guilds.cache.get(tlg.id).channels.cache.values())
-                    .filter(ch => (ch.parentID == tlg.discussCat && ch.name.startsWith('os')))
+                    .filter(ch => (ch.parentId == tlg.discussCat && ch.name.startsWith('os')))
                     .sort((a, b) => {return b.position - a.position})[0]
                     .position;
             },
@@ -60,14 +60,14 @@ module.exports = {
             fullRpChannel : function() {
                 let tlg = client.util.reloadFile('@data/tlg.json');
                 return Array.from(client.guilds.cache.get(tlg.id).channels.cache.values())
-                    .filter(ch => (ch.parentID == tlg.roleplayCat && !ch.name.startsWith('os')))
+                    .filter(ch => (ch.parentId == tlg.roleplayCat && !ch.name.startsWith('os')))
                     .sort((a, b) => {return b.position - a.position})[0]
                     .position;
             },
             fullDiscChannel : function() {
                 let tlg = client.util.reloadFile('@data/tlg.json');
                 return Array.from(client.guilds.cache.get(tlg.id).channels.cache.values())
-                    .filter(ch => (ch.parentID == tlg.discussCat && !ch.name.startsWith('os')))
+                    .filter(ch => (ch.parentId == tlg.discussCat && !ch.name.startsWith('os')))
                     .sort((a, b) => {return b.position - a.position})[0]
                     .position;
             },
@@ -82,12 +82,12 @@ module.exports = {
         
         let {camp, campVar} = await client.util.findCamp(message, args);
         if (!camp)
-            return message.channel.send(embed.setDescription("Please enter the camp name."));
+            return message.channel.send({embeds: [embed.setDescription("Please enter the camp name.")]});
         
         embed.setTitle(camp.name);
-        if (message.author.id != camp.DM && !message.member.roles.cache.some(r => r.id == tlg.modRoleID) && !message.member.hasPermission('ADMINISTRATOR')) {
+        if (message.author.id != camp.DM && !message.member.roles.cache.some(r => r.id == tlg.modRoleID) && !message.member.permissions.has('ADMINISTRATOR')) {
             embed.setDescription("You are not the Dungeon Master of this camp, nor a moderator.\nYou cannot use this command.");
-            return message.channel.send(embed);
+            return message.channel.send({embeds: [embed]});
         };
         
         let rpCh = message.guild.channels.resolve(camp.roleplayChannel);
@@ -111,7 +111,7 @@ module.exports = {
                     if (!newState) newState = Array.from(stateMap.values()).find(s => s.toLowerCase().includes(args[i+1].toLowerCase()));
                     if (!newState) {
                         embed.setDescription('No new state provided or wrong argument. Modification canceled.');
-                        return message.channel.send(embed);
+                        return message.channel.send({embeds: [embed]});
                     };
                     camp.state = newState;
                     break;
@@ -142,7 +142,7 @@ module.exports = {
                     break;
                 default:
                     embed.setDescription('Unexpected field. Please insert `--name`/`-n`, `--state`/`-s`, `--description`/`--desc`/`-d`, `--notes`/`--note`/`-o`, or `--switchtype`/`-t`.');
-                    return message.channel.send(embed);
+                    return message.channel.send({embeds: [embed]});
             };
         }
 
@@ -161,6 +161,6 @@ module.exports = {
             .addField("Players", camp.players.length ? players : "No one yet");
         if (camp.description) embed.addField("Description", camp.description);
         if (camp.notes) embed.addField("Notes", camp.notes);
-        message.channel.send(embed);
+        message.channel.send({embeds: [embed]});
     },
 };

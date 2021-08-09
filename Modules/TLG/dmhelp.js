@@ -17,7 +17,7 @@ module.exports = {
     usage: `\`<commandname>\``,
 
     async execute(client, message, args, joined, embed) {
-        message.channel.send(embed.setDescription(
+        message.channel.send({embeds: [embed.setDescription(
             "Below are some useful commands:\n\n" +
             "`campaign`/`camp` View campaigns list, or details of a campaign (use `--this` option inside a campaign channel to view that campaign's details);\n" +
             "`playerinfo`/`pi` View character sheet and token link;\n" +
@@ -30,6 +30,6 @@ module.exports = {
             "Please remember to set your camp's status to `1`/`\"Finding players\"`, `2`/`\"Waiting for start\"`, `3`/`Running` or `4`/`Paused` (DO include the double quotes) when necessary.\n\n" +
             "For more commands please see [here](https://discord.com/channels/559816640133595137/635118914048753674/636077633939177482).\n\n" +
             "**Have fun with your game! NAT 20!**"
-        ));
+        )]});
     },
 };
