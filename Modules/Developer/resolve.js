@@ -19,9 +19,9 @@ module.exports = {
     async execute(client, message, args, joined, embed) {
         let result;
         if (!args[0].startsWith('-')) {
-            result = client.util.user(message.guild, joined);
-            if (!result) result = client.util.channel(message.guild, joined);
-            if (!result) result = client.util.role(message.guild, joined);
+            result = client.util.user(message.guild, args[0]) ?? client.util.channel(message.guild, args[0]) ?? client.util.role(message.guild, args[0])
+                client.util.user(message.guild, joined) ?? client.util.channel(message.guild, joined) ?? client.util.role(message.guild, joined);
+            console.log(result);
         } else {
             switch (args[0]) {
                 case '-u':
@@ -37,6 +37,6 @@ module.exports = {
                     return message.channel.send({embeds: [embed.setDescription('Wrong argument.')]});
             }
         }
-        message.channel.send({embeds: [embed.setDescription(result ? result.toString() : 'Cannot resolve.')]});
+        message.channel.send({embeds: [embed.setDescription(result?.toString() ?? 'Cannot resolve.')]});
     },
 };

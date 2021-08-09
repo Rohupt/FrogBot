@@ -43,11 +43,11 @@ module.exports = {
 
         const rpCh = guild.channels.resolve(camp.roleplayChannel), dcCh = guild.channels.resolve(camp.discussChannel);
         camp.DM = newDM.id;
-        rpCh.permissionOverwrites.delete(oldDM?.id ?? camp.DM);
-        dcCh.permissionOverwrites.delete(oldDM?.id ?? camp.DM);
-        if (!camp.players.some(p => p == (oldDM?.id ?? camp.DM)))
+        rpCh.permissionOverwrites.delete(oldDM.id);
+        dcCh.permissionOverwrites.delete(oldDM.id);
+        if (!camp.players.some(p => p == oldDM.id))
             oldDM.roles.remove(camp.role);
-        if (!campList.filter(c => c.DM == (oldDM?.id ?? camp.DM)).length && oldDM.roles.cache.has(tlg.dmRoleID))
+        if (!campList.filter(c => c.DM == oldDM.id).length && oldDM.roles.cache.has(tlg.dmRoleID))
             oldDM.roles.remove(tlg.dmRoleID);
         
         if (!newDM.roles.cache.has(camp.role))
