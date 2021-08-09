@@ -35,7 +35,7 @@ module.exports = {
             embed.setDescription("Please provide the new DM's identity.");
             return message.channel.send({embeds: [embed]});
         };
-        const oldDM = guild.members.resolve(camp.DM);
+        const oldDM = client.util.user(message.guild, camp.DM);
         if (newDM === oldDM) {
             embed.setDescription("The old DM and the new one are the same person, hence no change made.");
             return message.channel.send({embeds: [embed]});
@@ -43,11 +43,11 @@ module.exports = {
 
         const rpCh = guild.channels.resolve(camp.roleplayChannel), dcCh = guild.channels.resolve(camp.discussChannel);
         camp.DM = newDM.id;
-        rpCh.permissionOverwrites.delete(oldDM.id);
-        dcCh.permissionOverwrites.delete(oldDM.id);
-        if (!camp.players.some(p => p == oldDM.id))
+        rpCh.permissionOverwrites.delete(oldDM.id ?? camp.DM);
+        dcCh.permissionOverwrites.delete(oldDM.id ?? camp.DM);
+        if (!camp.players.some(p => p == (oldDM.id ?? camp.DM)))
             oldDM.roles.remove(camp.role);
-        if (!campList.filter(c => c.DM == oldDM.id).length && oldDM.roles.cache.has(tlg.dmRoleID))
+        if (!campList.filter(c => c.DM == (oldDM.id ?? camp.DM)).length && oldDM.roles.cache.has(tlg.dmRoleID))
             oldDM.roles.remove(tlg.dmRoleID);
         
         if (!newDM.roles.cache.has(camp.role))
