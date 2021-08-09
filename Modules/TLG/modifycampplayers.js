@@ -109,7 +109,7 @@ module.exports = {
         var addField = "", removeField = "", resultField = "|";
         addList.forEach(mem => addField += `${mem}\n`);
         removeList.forEach(mem => removeField += `${mem}\n`);
-        camp.players.forEach(p => resultField += ` ${guild.members.resolve(p.id)} |`);
+        camp.players.forEach(p => resultField += ` <@!${p.id}> |`);
         embed.setTitle(camp.name).setDescription(desc)
             .addField("Players added", addField ? addField : "None", true)
             .addField("Players removed", removeField ? removeField : "None", true)

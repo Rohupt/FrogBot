@@ -149,7 +149,7 @@ module.exports = {
         
         await CampModel.updateOne({ _id: camp.id }, camp);
         var players = '|';
-        camp.players.forEach(p => players += ` ${message.guild.members.resolve(p.id)} |`);
+        camp.players.forEach(p => players += ` <@!${p.id}> |`);
         embed.setTitle(camp.name)
             .setDescription('Modification completed. Please recheck:')
             .addField("Type", camp.isOS ? "Oneshot" : "Full", true)

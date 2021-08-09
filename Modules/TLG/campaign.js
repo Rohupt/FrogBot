@@ -107,7 +107,7 @@ module.exports = {
         if (result.length == 1) {
             let camp = result[0];
             var players = '|';
-            camp.players.forEach(p => players += ` ${message.guild.members.resolve(p.id)} |`);
+            camp.players.forEach(p => players += ` <@!${p.id}> |`);
             embed.setTitle(camp.name)
                 .addField("Type", camp.isOS ? "Oneshot" : "Full", true)
                 .addField("State", camp.state, true)
