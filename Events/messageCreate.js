@@ -156,7 +156,7 @@ async function executeCommand(client, message) {
     let embed = client.util.newReturnEmbed(message);
     if (!checkChannel(message, command, embed)
         || command.module == 'TLG' && (message.channel.type == 'dm' || message.guild.id != tlg.id)
-        || command.module == 'Textgame' && (message.channel.type == 'dm' || message.guild.id != '687598549344452629')) {
+        || command.module == 'Textgame' && (message.channel.type == 'dm' || !['687598549344452629', '866912794506297384'].includes(message.guild.id))) {
         embed.setDescription('This command is not for this channel/server. Please refer to `help` for more information.');
         return message.channel.send({embeds: [embed]});
     }
