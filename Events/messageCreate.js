@@ -154,7 +154,9 @@ async function executeCommand(client, message) {
 
     //check channel type
     let embed = client.util.newReturnEmbed(message);
-    if (!checkChannel(message, command, embed) || command.module == 'TLG' && (message.channel.type == 'dm' || message.guild.id != tlg.id)) {
+    if (!checkChannel(message, command, embed)
+        || command.module == 'TLG' && (message.channel.type == 'dm' || message.guild.id != tlg.id)
+        || command.module == 'Textgame' && (message.channel.type == 'dm' || message.guild.id != '687598549344452629')) {
         embed.setDescription('This command is not for this channel/server. Please refer to `help` for more information.');
         return message.channel.send({embeds: [embed]});
     }
@@ -162,7 +164,8 @@ async function executeCommand(client, message) {
     //check number of arguments
     if (args.length < command.minArguments) {
         embed.setDescription(`There are not enough arguments to execute that command.\n`
-            + `You provided \`${args.length}\` ${args.length > 1 ? 'arguments' : 'argument'}, but at least \`${command.minArguments}\` ${command.minArguments > 1 ? 'are' : 'is'} needed.`);
+            + `You provided \`${args.length}\` ${args.length > 1 ? 'arguments' : 'argument'}, but at least \`${command.minArguments}\` ${command.minArguments > 1 ? 'are' : 'is'} needed.\n`
+            + `Please refer to \`${prefix}help ${command.name}\` for more info.`);
         return message.channel.send({embeds: [embed]});
     }
     
