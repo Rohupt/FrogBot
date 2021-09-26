@@ -62,26 +62,32 @@ module.exports = {
             if (Array.from(quoted.attachments.values()).some(a => a.height))
                 image = Array.from(quoted.attachments.values()).find(a => a.height);
 
-        embed.setAuthor((quoted.member ? quoted.member.nickname ? quoted.member.nickname : quoted.author.username : quoted.author.username), quoted.author.avatarURL(), quoted.url)
+        embed.setAuthor((quoted.member?.nickname || quoted.author.username), quoted.author.avatarURL(), quoted.url)
             .setColor(quoted.member ? quoted.member.displayHexColor : 'BLACK')
             .setDescription(quoted.embeds.length > 0 && !quoted.content ? `[Message contains only embed(s), see below]` : quoted.content)
             .setTimestamp(quoted.createdAt)
             .setFooter(quoted.channel.type == 'dm' ? `Direct Message` : `#${quoted.channel.name} @ ${quoted.guild.name}`,
                 quoted.channel.type == 'dm' ? quoted.author.avatarURL() : quoted.guild.iconURL());
         if (image) embed.setImage(`${image.url}`);
-        
-        let webhook = await message.channel.createWebhook(
+
+        if (args.includes('-n')) {
+            let webhook = await message.channel.createWebhook(
                 message.channel.type == 'dm'
                     ? message.author.username
                     : message.member.nickname
                         ? message.member.nickname : message.author.username,
                 {avatar: message.author.displayAvatarURL()});
 
-        webhook.send(args.includes('-n') ? quoted.content : null,
-            args.includes('-n')
-                ? {files: [image], embeds: [...quoted.embeds]}
-                : {embeds: [embed, ...quoted.embeds]});
-        await message.delete();
-        await webhook.delete();
+            let naturalMessage = {content: quoted.content};
+            if (image) naturalMessage['files'] = [image];
+            if (quoted.embeds.length) naturalMessage['embeds'] = [...quoted.embeds];
+
+            await webhook.send(naturalMessage);
+            await webhook.delete();
+        } else {
+            await message.channel.send({embeds: [embed, ...quoted.embeds]})
+        }
+
+        message.delete();
     },
 };
