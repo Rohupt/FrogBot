@@ -13,7 +13,7 @@ module.exports = {
     botPermissionList: [],
     minArguments: 1,
     
-    description: '',
+    description: 'Redirect the conversation to the appropriate channel.',
     usage: `\`<commandname> <channel>\` Create a portal to another channel.`,
 
     async execute(client, message, args, joined, embed) {

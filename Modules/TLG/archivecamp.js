@@ -26,7 +26,7 @@ module.exports = {
                 return Array.from(client.guilds.cache.get(tlg.id).channels.cache.values())
                     .filter(ch => (ch.parentId == tlg.archiveCat))
                     .sort((a, b) => {return b.position - a.position})[0]
-                    .position;
+                    ?.position || 0;
             },
         };
 
@@ -53,7 +53,7 @@ module.exports = {
 
         if (client.util.channel(message.guild, archiveCat).children.size >= client.constants.MAX_CHANNELS_PER_CATEGORY) {
             let prefix = await client.util.commandPrefix(client, message);
-            return message.channel.send({embeds: [embed.setDescription(`Archive category full. Please change to another category (using \`${prefix}ac\`) before continuing.`)]});
+            return message.channel.send({embeds: [embed.setDescription(`Archive category full. Please change to another category (using \`${prefix}acat\`) before continuing.`)]});
         }
         
         const newPos = pos.archive() + 1;
@@ -84,7 +84,7 @@ module.exports = {
                 await player.roles.add(noCampRoleID);
         };
         
-        let reportChannel = message.channel || message.author.dmChannel;
+        let reportChannel = message.channel || message.author.dmChannel || await message.author.createDM();
         await reportChannel.send({embeds: [embed.setDescription("Campaign archived.")]});
     },
 };

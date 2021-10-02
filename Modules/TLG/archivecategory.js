@@ -2,7 +2,7 @@ const Discord = require('discord.js');
 const {sep} = require('path');
 const name = __filename.split(sep)[__filename.split(sep).length - 1].replace(/\.[^/.]+$/, "");
 const mod = __dirname.split(sep)[__dirname.split(sep).length - 1];
-const aliases = ['ac'];
+const aliases = ['acat'];
 
 const ejf = require('edit-json-file');
 
@@ -29,7 +29,7 @@ module.exports = {
             });
         } else {
             let newAC = client.util.channel(message.guild, args[0]);
-            if (!newAC || newAC.type != 'category')
+            if (!newAC || newAC.type != 'GUILD_CATEGORY')
                 return message.channel.send({
                     embeds: [embed.setDescription('Invalid category. Please provide an ID of a **Category** channel within **this server**.')]
                 });
