@@ -66,12 +66,12 @@ setConfig = async (key, value) => {
 newReturnEmbed = (message, member) => {
     const isDM = message.channel.type == 'dm';
     const embed = new Discord.MessageEmbed();
-    embed.setAuthor(isDM
+    embed.setAuthor({name: isDM
                 ? message.author.username
                 : member
                     ? (member.nickname || member.user.username)
                     : (message.member.nickname || message.author.username),
-            member ? member.user.avatarURL() : message.author.avatarURL())
+            iconURL: member ? member.user.avatarURL() : message.author.avatarURL()})
         .setColor(isDM ? 'RANDOM' : member ? member.displayHexColor : message.member.displayHexColor);
     return embed;
 };

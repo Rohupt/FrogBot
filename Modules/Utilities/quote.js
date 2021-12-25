@@ -62,7 +62,7 @@ module.exports = {
             if (Array.from(quoted.attachments.values()).some(a => a.height))
                 image = Array.from(quoted.attachments.values()).find(a => a.height);
 
-        embed.setAuthor((quoted.member?.nickname || quoted.author.username), quoted.author.avatarURL(), quoted.url)
+        embed.setAuthor({name: (quoted.member?.nickname || quoted.author.username), iconURL: quoted.author.avatarURL(), url: quoted.url})
             .setColor(quoted.member ? quoted.member.displayHexColor : 'BLACK')
             .setDescription(quoted.embeds.length > 0 && !quoted.content ? `[Message contains only embed(s), see below]` : quoted.content)
             .setTimestamp(quoted.createdAt)
