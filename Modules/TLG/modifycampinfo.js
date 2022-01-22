@@ -41,42 +41,42 @@ module.exports = {
                 return Array.from(client.guilds.cache.get(tlg.id).channels.cache.values())
                     .filter(ch => (ch.parentId == tlg.roleplayCat && ch.name.startsWith('os')))
                     .sort((a, b) => {return b.position - a.position})[0]
-                    .position;
+                    ?.position ?? 0;
             },
             osDiscChannel : function() {
                 let tlg = client.util.reloadFile('@data/tlg.json');
                 return Array.from(client.guilds.cache.get(tlg.id).channels.cache.values())
                     .filter(ch => (ch.parentId == tlg.discussCat && ch.name.startsWith('os')))
                     .sort((a, b) => {return b.position - a.position})[0]
-                    .position;
+                    ?.position ?? 0;
             },
             osRole : function() {
                 let tlg = client.util.reloadFile('@data/tlg.json');
                 return Array.from(client.guilds.cache.get(tlg.id).roles.cache.values())
                     .filter(r => r.name.startsWith('OS '))
                     .sort((a, b) => {return b.position - a.position})[0]
-                    .position;
+                    ?.position ?? 0;
             },
             fullRpChannel : function() {
                 let tlg = client.util.reloadFile('@data/tlg.json');
                 return Array.from(client.guilds.cache.get(tlg.id).channels.cache.values())
                     .filter(ch => (ch.parentId == tlg.roleplayCat && !ch.name.startsWith('os')))
                     .sort((a, b) => {return b.position - a.position})[0]
-                    .position;
+                    .position ?? 0;
             },
             fullDiscChannel : function() {
                 let tlg = client.util.reloadFile('@data/tlg.json');
                 return Array.from(client.guilds.cache.get(tlg.id).channels.cache.values())
                     .filter(ch => (ch.parentId == tlg.discussCat && !ch.name.startsWith('os')))
                     .sort((a, b) => {return b.position - a.position})[0]
-                    .position;
+                    ?.position ?? 0;
             },
             fullRole : function() {
                 let tlg = client.util.reloadFile('@data/tlg.json');
-                return Array.from(client.guilds.cache.get(tlg.id).roles.cache.values())
+                return (Array.from(client.guilds.cache.get(tlg.id).roles.cache.values())
                     .filter(r => r.name.startsWith('_'))
                     .sort((a, b) => {return b.position - a.position})[2]
-                    .position + 2;
+                    ?.position ?? 0) + 2;
             },
         };
         
